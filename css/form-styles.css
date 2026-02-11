@@ -1,0 +1,325 @@
+/* Y-CAS 表单与导入界面样式 */
+
+/* 标签页 */
+.tabs {
+  display: flex;
+  gap: 0;
+  background: var(--gray-100);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-500);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-main);
+}
+
+.tab-btn:hover { color: var(--gray-700); }
+.tab-btn.tab-active {
+  background: white;
+  color: var(--primary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  font-weight: 600;
+}
+
+/* 输入面板 */
+#input-panel {
+  max-width: 800px;
+  margin: 80px auto 40px;
+  padding: 0 20px;
+}
+
+/* 表单 */
+.form-section {
+  margin-bottom: 28px;
+}
+
+.form-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.form-section-title i {
+  margin-right: 8px;
+  color: var(--primary);
+}
+
+.form-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.form-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+.form-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-600);
+  margin-bottom: 6px;
+}
+
+.form-label .required {
+  color: var(--danger);
+  margin-left: 2px;
+}
+
+.form-input {
+  padding: 10px 14px;
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--gray-800);
+  transition: all 0.2s;
+  font-family: var(--font-main);
+  background: white;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(3, 103, 169, 0.1);
+}
+
+.form-input.field-error {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.error-msg {
+  display: none;
+  font-size: 12px;
+  color: var(--danger);
+  margin-top: 4px;
+}
+
+/* Radio组 */
+.radio-group {
+  display: flex;
+  gap: 16px;
+  padding: 10px 0;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--gray-600);
+}
+
+.radio-group input[type="radio"] {
+  accent-color: var(--primary);
+}
+
+/* 滑块 */
+.range-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.range-group input[type="range"] {
+  flex: 1;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--gray-200);
+  border-radius: 3px;
+  outline: none;
+}
+
+.range-group input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--primary);
+  cursor: pointer;
+  border: 3px solid white;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.range-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary);
+  min-width: 40px;
+  text-align: center;
+}
+
+/* 按钮区域 */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid var(--gray-200);
+}
+
+/* ========== 批量导入区域 ========== */
+.drop-zone {
+  border: 2px dashed var(--gray-300);
+  border-radius: 16px;
+  padding: 48px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  background: var(--gray-50);
+  margin-bottom: 24px;
+}
+
+.drop-zone:hover,
+.drop-zone.drag-over {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+
+.drop-zone .drop-icon {
+  font-size: 48px;
+  color: var(--gray-300);
+  margin-bottom: 16px;
+}
+
+.drop-zone.drag-over .drop-icon {
+  color: var(--primary);
+}
+
+.drop-zone .drop-text {
+  font-size: 16px;
+  color: var(--gray-500);
+  margin-bottom: 8px;
+}
+
+.drop-zone .drop-hint {
+  font-size: 13px;
+  color: var(--gray-400);
+}
+
+/* 导入步骤 */
+.import-steps {
+  display: flex;
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.import-step {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: var(--gray-50);
+  border-radius: 10px;
+}
+
+.import-step .step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.import-step .step-text {
+  font-size: 13px;
+  color: var(--gray-600);
+}
+
+/* 隐藏文件输入 */
+#excel-file-input {
+  display: none;
+}
+
+/* 预览表格 */
+#import-preview {
+  display: none;
+  margin-top: 20px;
+}
+
+#import-preview table {
+  border: 1px solid var(--gray-200);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#import-preview th,
+#import-preview td {
+  border-bottom: 1px solid var(--gray-100);
+}
+
+#import-preview tr:hover {
+  background: var(--gray-50);
+}
+
+/* 状态提示 */
+#import-status {
+  display: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #ecfdf5;
+  color: #059669;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 16px;
+}
+
+/* 配置编辑面板 */
+.config-editor {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.config-editor textarea {
+  width: 100%;
+  min-height: 400px;
+  border: 1px solid var(--gray-300);
+  border-radius: 8px;
+  padding: 12px;
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--gray-800);
+  resize: vertical;
+}
+
+.config-editor textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .form-grid.cols-3 { grid-template-columns: 1fr 1fr; }
+  .import-steps { flex-direction: column; }
+  .score-cards { grid-template-columns: 1fr; }
+}

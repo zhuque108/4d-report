@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Y-CAS 儿童身高管理评估报告生成器</title>
+
+  <!-- CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- 本地样式 -->
+  <link rel="stylesheet" href="css/report-styles.css">
+  <link rel="stylesheet" href="css/form-styles.css">
+  <link rel="stylesheet" href="css/print-styles.css">
+</head>
+<body>
+  <!-- ========== 工具栏 ========== -->
+  <div id="toolbar" class="no-print">
+    <div class="toolbar-inner">
+      <div style="display:flex;align-items:center;">
+        <div class="toolbar-title">Y-CAS 报告生成器</div>
+        <span id="config-status" class="toolbar-status" style="background:#ecfdf5;color:#059669;">就绪</span>
+      </div>
+      <div class="toolbar-actions">
+        <button class="btn btn-default" onclick="TabSwitcher.switchTo('form')" data-tab="form">
+          <i class="fas fa-edit"></i> 编辑
+        </button>
+        <button class="btn btn-default" onclick="previewReport()">
+          <i class="fas fa-eye"></i> 预览
+        </button>
+        <button class="btn btn-primary" data-action="export-pdf" onclick="exportPDF()">
+          <i class="fas fa-file-pdf"></i> 导出PDF
+        </button>
+        <button class="btn btn-success" onclick="window.print()">
+          <i class="fas fa-print"></i> 打印
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 数据输入面板 ========== -->
+  <div id="input-panel" class="no-print">
+    <!-- 标签页 -->
+    <div class="tabs">
+      <button class="tab-btn tab-active" data-tab="form" onclick="TabSwitcher.switchTo('form')">
+        <i class="fas fa-user-edit" style="margin-right:6px;"></i>单用户录入
+      </button>
+      <button class="tab-btn tab-inactive" data-tab="batch" onclick="TabSwitcher.switchTo('batch')">
+        <i class="fas fa-file-excel" style="margin-right:6px;"></i>批量导入
+      </button>
+      <button class="tab-btn tab-inactive" data-tab="config" onclick="TabSwitcher.switchTo('config')">
+        <i class="fas fa-code" style="margin-right:6px;"></i>配置编辑
+      </button>
+    </div>
+
+    <!-- ===== 面板1: 单用户表单 ===== -->
+    <div data-panel="form">
+      <form id="report-form" autocomplete="off">
+        <!-- 基础信息 -->
+        <div class="form-section">
+          <div class="form-section-title"><i class="fas fa-child"></i>基础信息</div>
+          <div class="form-grid cols-3">
+            <div class="form-group">
+              <label class="form-label">儿童姓名 <span class="required">*</span></label>
+              <input type="text" name="childName" class="form-input" placeholder="请输入姓名"
+                data-validate='{"required":true,"minLength":2,"maxLength":20}'>
+              <div class="error-msg"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">性别 <span class="required">*</span></label>
+              <div class="radio-group">
+                <label><input type="radio" name="gender" value="male"> 男</label>
+                <label><input type="radio" name="gender" value="female"> 女</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">出生日期 <span class="required">*</span></label>
+              <input type="date" name="birthDate" class="form-input"
+                data-validate='{"required":true}'>
+              <div class="error-msg"></div>
+            </div>
+          </div>
+          <div class="form-grid cols-3" style="margin-top:16px;">
+            <div class="form-group">
+              <label class="form-label">当前身高 (cm) <span class="required">*</span></label>
+              <input type="number" name="height" class="form-input" step="0.1" placeholder="如 128.5"
+                data-validate='{"required":true,"type":"number","min":40,"max":250}'>
+              <div class="error-msg"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">当前体重 (kg) <span class="required">*</span></label>
+              <input type="number" name="weight" class="form-input" step="0.1" placeholder="如 26.8"
+                data-validate='{"required":true,"type":"number","min":1,"max":150}'>
+              <div class="error-msg"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">测量日期</label>
+              <input type="date" name="measureDate" class="form-input">
+            </div>
+          </div>
+          <div class="form-grid cols-2" style="margin-top:16px;">
+            <div class="form-group">
+              <label class="form-label">年增长速率 (cm/年)</label>
+              <input type="number" name="growthRate" class="form-input" step="0.1" placeholder="如 5.5">
+            </div>
+          </div>
+        </div>
+
+        <!-- 遗传背景 -->
+        <div class="form-section">
+          <div class="form-section-title"><i class="fas fa-dna"></i>遗传背景</div>
+          <div class="form-grid cols-2">
+            <div class="form-group">
+              <label class="form-label">父亲身高 (cm) <span class="required">*</span></label>
+              <input type="number" name="fatherHeight" class="form-input" step="0.1" placeholder="如 175"
+                data-validate='{"required":true,"type":"number","min":140,"max":220}'>
+              <div class="error-msg"></div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">母亲身高 (cm) <span class="required">*</span></label>
+              <input type="number" name="motherHeight" class="form-input" step="0.1" placeholder="如 162"
+                data-validate='{"required":true,"type":"number","min":130,"max":200}'>
+              <div class="error-msg"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4D评分 -->
+        <div class="form-section">
+          <div class="form-section-title"><i class="fas fa-chart-radar"></i>4D维度评分（0-100分）</div>
+          <div class="form-grid cols-2">
+            <div class="form-group">
+              <label class="form-label">D1 深度睡眠 <span class="required">*</span></label>
+              <div class="range-group">
+                <input type="range" id="d1Range" name="d1Score" min="0" max="100" value="75"
+                  data-validate='{"required":true,"type":"number","min":0,"max":100}'>
+                <span class="range-value" id="d1Range-display">75</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">D2 精准营养 <span class="required">*</span></label>
+              <div class="range-group">
+                <input type="range" id="d2Range" name="d2Score" min="0" max="100" value="75"
+                  data-validate='{"required":true,"type":"number","min":0,"max":100}'>
+                <span class="range-value" id="d2Range-display">75</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">D3 纵向运动 <span class="required">*</span></label>
+              <div class="range-group">
+                <input type="range" id="d3Range" name="d3Score" min="0" max="100" value="75"
+                  data-validate='{"required":true,"type":"number","min":0,"max":100}'>
+                <span class="range-value" id="d3Range-display">75</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">D4 情绪与习惯 <span class="required">*</span></label>
+              <div class="range-group">
+                <input type="range" id="d4Range" name="d4Score" min="0" max="100" value="75"
+                  data-validate='{"required":true,"type":"number","min":0,"max":100}'>
+                <span class="range-value" id="d4Range-display">75</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 提交按钮 -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-default" onclick="loadSampleAndPreview()">
+            <i class="fas fa-database"></i> 加载示例数据
+          </button>
+          <button type="submit" class="btn btn-primary" id="btn-preview">
+            <i class="fas fa-eye"></i> 生成并预览报告
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ===== 面板2: 批量导入 ===== -->
+    <div data-panel="batch" style="display:none;">
+      <div id="import-status"></div>
+
+      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('excel-file-input').click()">
+        <div class="drop-icon"><i class="fas fa-file-excel"></i></div>
+        <div class="drop-text">点击或拖拽 Excel 文件到此处</div>
+        <div class="drop-hint">支持 .xlsx, .xls 格式，单次最多导入 50 条记录</div>
+      </div>
+      <input type="file" id="excel-file-input" accept=".xlsx,.xls">
+
+      <div class="import-steps">
+        <div class="import-step">
+          <span class="step-num">1</span>
+          <span class="step-text">下载Excel模板文件</span>
+        </div>
+        <div class="import-step">
+          <span class="step-num">2</span>
+          <span class="step-text">按模板格式填写数据</span>
+        </div>
+        <div class="import-step">
+          <span class="step-num">3</span>
+          <span class="step-text">上传并预览数据</span>
+        </div>
+        <div class="import-step">
+          <span class="step-num">4</span>
+          <span class="step-text">批量导出PDF</span>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin:20px 0;">
+        <button class="btn btn-default" onclick="downloadTemplate()">
+          <i class="fas fa-download"></i> 下载Excel模板
+        </button>
+      </div>
+
+      <div id="import-preview"></div>
+    </div>
+
+    <!-- ===== 面板3: 配置编辑 ===== -->
+    <div data-panel="config" style="display:none;">
+      <div class="config-editor">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <span style="font-size:14px;font-weight:600;color:var(--gray-700);">data/config.js 配置内容</span>
+          <button class="btn btn-primary" onclick="applyConfigEdit()">
+            <i class="fas fa-play"></i> 应用并预览
+          </button>
+        </div>
+        <textarea id="config-textarea" spellcheck="false"></textarea>
+        <div style="margin-top:8px;font-size:12px;color:var(--gray-400);">
+          直接编辑JSON配置，点击"应用并预览"生成报告。注意保持JSON格式正确。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== 错误容器 ========== -->
+  <div id="error-container" style="max-width:800px;margin:0 auto;display:none;" class="no-print"></div>
+
+  <!-- ========== 报告内容 ========== -->
+  <div id="report-container" style="display:none;">
+    <div class="page cover-page" data-page="1"></div>
+    <div class="page content-page" data-page="2"></div>
+    <div class="page content-page" data-page="3"></div>
+    <div class="page content-page" data-page="4"></div>
+    <div class="page content-page" data-page="5"></div>
+    <div class="page content-page" data-page="6"></div>
+  </div>
+
+  <!-- ========== 脚本加载 ========== -->
+  <script src="data/percentile-data.js"></script>
+  <script src="data/config.js"></script>
+  <script src="data/sample-data.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/validator.js"></script>
+  <script src="js/calculator.js"></script>
+  <script src="js/chart-config.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/pdf-exporter.js"></script>
+  <script src="js/tab-switcher.js"></script>
+  <script src="js/form-handler.js"></script>
+  <script src="js/excel-handler.js"></script>
+
+  <script>
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      TabSwitcher.init();
+      FormHandler.init();
+      ExcelHandler.init();
+
+      // 初始化配置编辑器
+      var textarea = document.getElementById('config-textarea');
+      if (textarea) {
+        textarea.value = JSON.stringify(USER_CONFIG, null, 2);
+      }
+    });
+
+    // 预览报告（从当前配置）
+    function previewReport() {
+      var success = ReportRenderer.init(USER_CONFIG);
+      if (success) {
+        TabSwitcher.switchTo('preview');
+      }
+    }
+
+    // 加载示例数据并预览
+    function loadSampleAndPreview() {
+      loadSampleData(0);
+
+      // 回填表单
+      var form = document.getElementById('report-form');
+      if (form) {
+        form.querySelector('[name="childName"]').value = USER_CONFIG.child.name;
+        var genderRadio = form.querySelector('[name="gender"][value="' + USER_CONFIG.child.gender + '"]');
+        if (genderRadio) genderRadio.checked = true;
+        form.querySelector('[name="birthDate"]').value = USER_CONFIG.child.birthDate;
+        form.querySelector('[name="height"]').value = USER_CONFIG.measurements.height;
+        form.querySelector('[name="weight"]').value = USER_CONFIG.measurements.weight;
+        form.querySelector('[name="measureDate"]').value = USER_CONFIG.measurements.date;
+        form.querySelector('[name="growthRate"]').value = USER_CONFIG.measurements.growthRate || '';
+        form.querySelector('[name="fatherHeight"]').value = USER_CONFIG.genetics.fatherHeight;
+        form.querySelector('[name="motherHeight"]').value = USER_CONFIG.genetics.motherHeight;
+
+        var scores = USER_CONFIG.scores4D;
+        var d1 = form.querySelector('[name="d1Score"]'); d1.value = scores.d1_sleep;
+        var d2 = form.querySelector('[name="d2Score"]'); d2.value = scores.d2_nutrition;
+        var d3 = form.querySelector('[name="d3Score"]'); d3.value = scores.d3_sport;
+        var d4 = form.querySelector('[name="d4Score"]'); d4.value = scores.d4_mood;
+
+        document.getElementById('d1Range-display').textContent = scores.d1_sleep;
+        document.getElementById('d2Range-display').textContent = scores.d2_nutrition;
+        document.getElementById('d3Range-display').textContent = scores.d3_sport;
+        document.getElementById('d4Range-display').textContent = scores.d4_mood;
+      }
+
+      document.getElementById('config-status').textContent = '示例数据已加载';
+      document.getElementById('config-status').style.background = '#eff6ff';
+      document.getElementById('config-status').style.color = '#2563eb';
+    }
+
+    // 应用配置编辑
+    function applyConfigEdit() {
+      var textarea = document.getElementById('config-textarea');
+      if (!textarea) return;
+
+      try {
+        var newConfig = JSON.parse(textarea.value);
+        Object.assign(USER_CONFIG, newConfig);
+        previewReport();
+      } catch (e) {
+        alert('JSON格式错误: ' + e.message);
+      }
+    }
+  </script>
+</body>
+</html>

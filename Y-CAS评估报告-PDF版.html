@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Y-CAS儿童身高管理评估报告</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f7ff', 100: '#e0effe', 200: '#bae0fd', 300: '#7ccbfd',
+                            400: '#36b3fa', 500: '#0c9af0', 600: '#027fd1', 700: '#0367a9',
+                            800: '#075585', 900: '#0c486e',
+                        },
+                        medical: {
+                            50: '#f0fdfa', 100: '#ccfbf1', 200: '#99f6e4', 300: '#5eead4',
+                            400: '#2dd4bf', 500: '#14b8a6', 600: '#0d9488', 700: '#0f766e',
+                        },
+                        warm: { 50: '#fffbeb', 100: '#fef3c7', 200: '#fde68a', 500: '#f59e0b' },
+                        danger: { 50: '#fef2f2', 100: '#fee2e2', 500: '#ef4444' }
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans SC', 'system-ui', 'sans-serif'],
+                        display: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Noto Sans SC', system-ui, sans-serif;
+            background: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
+        
+        /* A4 Page Settings */
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto 20px;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Cover Page */
+        .cover-page {
+            background: linear-gradient(135deg, #0c486e 0%, #0367a9 50%, #0d9488 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px;
+        }
+        
+        .cover-logo {
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.15);
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .cover-title {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: 4px;
+        }
+        
+        .cover-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+        
+        .cover-system {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 60px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        .cover-info {
+            background: rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 30px 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .cover-info-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 12px 0;
+            font-size: 15px;
+        }
+        
+        .cover-info-label { opacity: 0.7; }
+        .cover-info-value { font-weight: 600; }
+        
+        .cover-footer {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            opacity: 0.6;
+            font-size: 12px;
+        }
+        
+        /* Content Pages */
+        .content-page {
+            padding: 50px 45px;
+        }
+        
+        /* Section Header */
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .section-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #0c9af0 0%, #14b8a6 100%);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 18px;
+            margin-right: 15px;
+        }
+        
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        
+        .section-subtitle {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 2px;
+        }
+        
+        /* Info Cards */
+        .info-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0c9af0;
+        }
+        
+        .info-card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0c9af0;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-card-title i { margin-right: 8px; }
+        
+        /* Data Grid */
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .data-label {
+            font-size: 13px;
+            color: #64748b;
+        }
+        
+        .data-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        
+        /* Score Cards */
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .score-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 15px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .score-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transform: translateY(-2px);
+        }
+        
+        .score-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .score-card.d1 .score-icon { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+        .score-card.d2 .score-icon { background: linear-gradient(135deg, #f97316, #fb923c); }
+        .score-card.d3 .score-icon { background: linear-gradient(135deg, #10b981, #34d399); }
+        .score-card.d4 .score-icon { background: linear-gradient(135deg, #f43f5e, #fb7185); }
+        
+        .score-name {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+        
+        .score-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .score-card.d1 .score-value { color: #6366f1; }
+        .score-card.d2 .score-value { color: #f97316; }
+        .score-card.d3 .score-value { color: #10b981; }
+        .score-card.d4 .score-value { color: #f43f5e; }
+        
+        .score-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .badge-excellent { background: #d1fae5; color: #065f46; }
+        .badge-good { background: #e0effe; color: #075585; }
+        .badge-average { background: #ffedd5; color: #9a3412; }
+        .badge-poor { background: #fee2e2; color: #991b1b; }
+        
+        /* Chart Container */
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 25px;
+        }
+        
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+        
+        .data-table th {
+            background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #475569;
+            border-bottom: 2px solid #cbd5e1;
+        }
+        
+        .data-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .data-table tr:hover td {
+            background: #f8fafc;
+        }
+        
+        /* Risk Indicators */
+        .risk-low { 
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 12px; background: #d1fae5; color: #065f46;
+            border-radius: 20px; font-size: 12px; font-weight: 600;
+        }
+        .risk-medium { 
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 12px; background: #fef3c7; color: #92400e;
+            border-radius: 20px; font-size: 12px; font-weight: 600;
+        }
+        .risk-high { 
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 12px; background: #fee2e2; color: #991b1b;
+            border-radius: 20px; font-size: 12px; font-weight: 600;
+        }
+        
+        .risk-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+        }
+        .risk-low .risk-dot { background: #10b981; }
+        .risk-medium .risk-dot { background: #f59e0b; }
+        .risk-high .risk-dot { background: #ef4444; }
+        
+        /* Progress Bars */
+        .progress-container {
+            margin: 10px 0;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 1s ease;
+        }
+        
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #0c9af0, #14b8a6);
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-bottom: 25px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -26px;
+            top: 2px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #0c9af0;
+        }
+        
+        .timeline-title {
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 4px;
+        }
+        
+        .timeline-desc {
+            font-size: 13px;
+            color: #64748b;
+        }
+        
+        /* Summary Box */
+        .summary-box {
+            background: linear-gradient(135deg, #f0f7ff 0%, #f0fdf4 100%);
+            border-radius: 16px;
+            padding: 30px;
+            border: 1px solid #e0effe;
+            margin-bottom: 25px;
+        }
+        
+        .summary-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .summary-title i {
+            margin-right: 10px;
+            color: #0c9af0;
+        }
+        
+        /* Action Items */
+        .action-list {
+            list-style: none;
+        }
+        
+        .action-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        
+        .action-number {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #0c9af0, #14b8a6);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 15px;
+        }
+        
+        .action-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        /* Footer */
+        .page-footer {
+            position: absolute;
+            bottom: 30px;
+            left: 45px;
+            right: 45px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+        }
+        
+        /* Print Styles */
+        @media print {
+            body { background: white; }
+            .page {
+                box-shadow: none;
+                margin: 0;
+                page-break-after: always;
+            }
+            .no-print { display: none !important; }
+        }
+        
+        /* PDF Export Button */
+        .export-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #0c9af0 0%, #14b8a6 100%);
+            color: white;
+            border: none;
+            padding: 16px 28px;
+            border-radius: 50px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 8px 25px rgba(12, 154, 240, 0.4);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 1000;
+        }
+        
+        .export-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(12, 154, 240, 0.5);
+        }
+        
+        /* Two Column Layout */
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+        
+        /* Highlight Box */
+        .highlight-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #f59e0b;
+            margin: 20px 0;
+        }
+        
+        .highlight-box.danger {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-left-color: #ef4444;
+        }
+        
+        .highlight-box.success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-left-color: #10b981;
+        }
+    </style>
+</head>
+<body>
+    <!-- PDF Export Button -->
+    <button class="export-btn no-print" onclick="exportPDF()">
+        <i class="fas fa-file-pdf"></i>
+        导出PDF报告
+    </button>
+
+    <div id="report-content">
+        <!-- Page 1: Cover -->
+        <div class="page cover-page">
+            <div class="cover-logo">益</div>
+            <h1 class="cover-title">儿童身高管理评估报告</h1>
+            <p class="cover-subtitle">Y-CAS™ 多维度动态评估系统</p>
+            <p class="cover-system">Yikangshun Clinical Assessment System</p>
+            
+            <div class="cover-info">
+                <div class="cover-info-item">
+                    <span class="cover-info-label">评估编号</span>
+                    <span class="cover-info-value">YCAS-2025-001</span>
+                </div>
+                <div class="cover-info-item">
+                    <span class="cover-info-label">评估日期</span>
+                    <span class="cover-info-value">2025年2月11日</span>
+                </div>
+                <div class="cover-info-item">
+                    <span class="cover-info-label">报告生成时间</span>
+                    <span class="cover-info-value">2025年2月11日 14:30</span>
+                </div>
+            </div>
+            
+            <div class="cover-footer">
+                <p>益康顺儿童健康管理 | 专注家庭场景的"儿童健康"管理</p>
+                <p>医育结合 · 4D科学 · 5S品质</p>
+            </div>
+        </div>
+
+        <!-- Page 2: Basic Info -->
+        <div class="page content-page">
+            <div class="section-header">
+                <div class="section-number">01</div>
+                <div>
+                    <div class="section-title">宝贝基础档案</div>
+                    <div class="section-subtitle">BASIC INFORMATION</div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-card-title">
+                    <i class="fas fa-user"></i>
+                    基本信息
+                </div>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <span class="data-label">姓名</span>
+                        <span class="data-value">张小萌</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">性别</span>
+                        <span class="data-value">女</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">出生日期</span>
+                        <span class="data-value">2016年3月15日</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">实际年龄</span>
+                        <span class="data-value">8岁11个月</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">当前身高</span>
+                        <span class="data-value">128.5 cm</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">当前体重</span>
+                        <span class="data-value">26.8 kg</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">测量日期</span>
+                        <span class="data-value">2025年2月11日</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">评估编号</span>
+                        <span class="data-value">YCAS-2025-001</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="two-column">
+                <div class="info-card" style="border-left-color: #10b981;">
+                    <div class="info-card-title" style="color: #10b981;">
+                        <i class="fas fa-chart-line"></i>
+                        生长数据
+                    </div>
+                    <div class="data-item" style="margin-bottom: 10px;">
+                        <span class="data-label">身高百分位</span>
+                        <span class="data-value">P50 <span class="badge-good" style="font-size: 10px; padding: 2px 8px;">正常</span></span>
+                    </div>
+                    <div class="data-item" style="margin-bottom: 10px;">
+                        <span class="data-label">BMI指数</span>
+                        <span class="data-value">16.2 <span class="badge-good" style="font-size: 10px; padding: 2px 8px;">正常</span></span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">年增长速率</span>
+                        <span class="data-value">5.5 cm/年 <span class="badge-good" style="font-size: 10px; padding: 2px 8px;">正常</span></span>
+                    </div>
+                </div>
+
+                <div class="info-card" style="border-left-color: #8b5cf6;">
+                    <div class="info-card-title" style="color: #8b5cf6;">
+                        <i class="fas fa-dna"></i>
+                        遗传背景
+                    </div>
+                    <div class="data-item" style="margin-bottom: 10px;">
+                        <span class="data-label">父亲身高</span>
+                        <span class="data-value">175 cm</span>
+                    </div>
+                    <div class="data-item" style="margin-bottom: 10px;">
+                        <span class="data-label">母亲身高</span>
+                        <span class="data-value">162 cm</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">遗传靶身高</span>
+                        <span class="data-value">162.0 ± 5 cm</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card" style="border-left-color: #f59e0b;">
+                <div class="info-card-title" style="color: #f59e0b;">
+                    <i class="fas fa-bone"></i>
+                    骨龄情况
+                </div>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <span class="data-label">骨龄片</span>
+                        <span class="data-value">有</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">骨龄</span>
+                        <span class="data-value">9岁2个月</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">骨龄与实际年龄差</span>
+                        <span class="data-value">+3个月 <span class="badge-average" style="font-size: 10px; padding: 2px 8px;">超前</span></span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">生长板闭合预估</span>
+                        <span class="data-value">14-15岁</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-footer">
+                <span>益康顺儿童健康管理</span>
+                <span>第 2 页 / 共 6 页</span>
+            </div>
+        </div>
+
+        <!-- Page 3: 4D Assessment -->
+        <div class="page content-page">
+            <div class="section-header">
+                <div class="section-number">02</div>
+                <div>
+                    <div class="section-title">4D多维度评估结果</div>
+                    <div class="section-subtitle">4D MULTI-DIMENSIONAL ASSESSMENT</div>
+                </div>
+            </div>
+
+            <div class="score-grid">
+                <div class="score-card d1">
+                    <div class="score-icon"><i class="fas fa-moon"></i></div>
+                    <div class="score-name">D1 深度睡眠</div>
+                    <div class="score-value">85</div>
+                    <span class="score-badge badge-excellent">优秀</span>
+                </div>
+                <div class="score-card d2">
+                    <div class="score-icon"><i class="fas fa-utensils"></i></div>
+                    <div class="score-name">D2 精准营养</div>
+                    <div class="score-value">68</div>
+                    <span class="score-badge badge-average">一般</span>
+                </div>
+                <div class="score-card d3">
+                    <div class="score-icon"><i class="fas fa-running"></i></div>
+                    <div class="score-name">D3 纵向运动</div>
+                    <div class="score-value">72</div>
+                    <span class="score-badge badge-good">良好</span>
+                </div>
+                <div class="score-card d4">
+                    <div class="score-icon"><i class="fas fa-heart"></i></div>
+                    <div class="score-name">D4 情绪与习惯</div>
+                    <div class="score-value">78</div>
+                    <span class="score-badge badge-good">良好</span>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">4D维度雷达图分析</div>
+                <div style="height: 280px; display: flex; justify-content: center;">
+                    <canvas id="radarChart" style="max-width: 400px;"></canvas>
+                </div>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 20%;">维度</th>
+                        <th style="width: 15%;">得分</th>
+                        <th style="width: 15%;">权重</th>
+                        <th style="width: 15%;">状态</th>
+                        <th style="width: 35%;">评估说明</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong style="color: #6366f1;">D1 深度睡眠</strong></td>
+                        <td><strong>85/100</strong></td>
+                        <td>25%</td>
+                        <td><span class="badge-excellent" style="font-size: 11px; padding: 3px 10px;">优势</span></td>
+                        <td>睡眠质量良好，入睡时间规律，夜间觉醒次数少</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color: #f97316;">D2 精准营养</strong></td>
+                        <td><strong>68/100</strong></td>
+                        <td>25%</td>
+                        <td><span class="badge-average" style="font-size: 11px; padding: 3px 10px;">短板</span></td>
+                        <td>存在挑食偏食现象，早餐不规律，零食摄入较多</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color: #10b981;">D3 纵向运动</strong></td>
+                        <td><strong>72/100</strong></td>
+                        <td>25%</td>
+                        <td><span class="badge-good" style="font-size: 11px; padding: 3px 10px;">正常</span></td>
+                        <td>运动量基本达标，建议增加纵向运动频率</td>
+                    </tr>
+                    <tr>
+                        <td><strong style="color: #f43f5e;">D4 情绪与习惯</strong></td>
+                        <td><strong>78/100</strong></td>
+                        <td>25%</td>
+                        <td><span class="badge-good" style="font-size: 11px; padding: 3px 10px;">正常</span></td>
+                        <td>家庭氛围和谐，偶发焦虑情绪，整体心理状态良好</td>
+                    </tr>
+                    <tr style="background: linear-gradient(90deg, #f0f7ff, #f0fdf4);">
+                        <td><strong>综合得分</strong></td>
+                        <td><strong style="font-size: 18px; color: #0c9af0;">75.8/100</strong></td>
+                        <td>100%</td>
+                        <td><span class="badge-good" style="font-size: 11px; padding: 3px 10px;">良好</span></td>
+                        <td>整体评估结果良好，建议重点改善营养维度</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="page-footer">
+                <span>益康顺儿童健康管理</span>
+                <span>第 3 页 / 共 6 页</span>
+            </div>
+        </div>
+
+        <!-- Page 4: Growth Prediction -->
+        <div class="page content-page">
+            <div class="section-header">
+                <div class="section-number">03</div>
+                <div>
+                    <div class="section-title">生长潜力预测</div>
+                    <div class="section-subtitle">GROWTH POTENTIAL PREDICTION</div>
+                </div>
+            </div>
+
+            <div class="two-column">
+                <div class="info-card" style="border-left-color: #0c9af0;">
+                    <div class="info-card-title" style="color: #0c9af0;">
+                        <i class="fas fa-ruler"></i>
+                        当前状态评估
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">身高</span>
+                        <span class="data-value">128.5 cm <span class="badge-good" style="font-size: 10px;">正常</span></span>
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">体重</span>
+                        <span class="data-value">26.8 kg <span class="badge-good" style="font-size: 10px;">正常</span></span>
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">BMI</span>
+                        <span class="data-value">16.2 <span class="badge-good" style="font-size: 10px;">正常</span></span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">年增长率</span>
+                        <span class="data-value">5.5 cm/年 <span class="badge-good" style="font-size: 10px;">正常</span></span>
+                    </div>
+                </div>
+
+                <div class="info-card" style="border-left-color: #8b5cf6;">
+                    <div class="info-card-title" style="color: #8b5cf6;">
+                        <i class="fas fa-calculator"></i>
+                        剩余生长空间
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">当前骨龄</span>
+                        <span class="data-value">9岁2个月</span>
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">生长板闭合预估</span>
+                        <span class="data-value">14-15岁</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">剩余生长潜力</span>
+                        <span class="data-value" style="color: #10b981;">约 25-30 cm</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">成年身高预测对比</div>
+                
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>遗传靶身高</span>
+                        <span>162 cm <small style="color: #94a3b8;">(置信区间: 157-167 cm)</small></span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 70%; background: linear-gradient(90deg, #94a3b8, #64748b);"></div>
+                    </div>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span>当前生长轨迹预测</span>
+                        <span>160 cm</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 68%; background: linear-gradient(90deg, #f59e0b, #f97316);"></div>
+                    </div>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span style="color: #10b981; font-weight: 600;">4D优化后预测</span>
+                        <span style="color: #10b981; font-weight: 600;">166 cm <i class="fas fa-arrow-up"></i> +6 cm</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%; background: linear-gradient(90deg, #10b981, #34d399);"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box success">
+                <strong style="color: #065f46;"><i class="fas fa-lightbulb"></i> 预测分析：</strong>
+                <span style="color: #065f46;">通过4D综合干预，预计可突破遗传靶身高约4cm，达到166cm的预测身高。建议重点改善营养维度，配合规律运动和优质睡眠，最大化生长潜力。</span>
+            </div>
+
+            <div class="page-footer">
+                <span>益康顺儿童健康管理</span>
+                <span>第 4 页 / 共 6 页</span>
+            </div>
+        </div>
+
+        <!-- Page 5: Intervention Plan -->
+        <div class="page content-page">
+            <div class="section-header">
+                <div class="section-number">04</div>
+                <div>
+                    <div class="section-title">个性化干预方案</div>
+                    <div class="section-subtitle">PERSONALIZED INTERVENTION PLAN</div>
+                </div>
+            </div>
+
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th style="width: 18%;">维度</th>
+                        <th style="width: 22%;">核心问题</th>
+                        <th style="width: 35%;">干预重点</th>
+                        <th style="width: 15%;">预期改善</th>
+                        <th style="width: 10%;">周期</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span style="color: #6366f1;"><i class="fas fa-moon"></i> D1 睡眠</span></td>
+                        <td>睡眠质量良好</td>
+                        <td>保持规律作息，确保21:30前入睡，睡眠时长9-11小时</td>
+                        <td>维持优秀水平</td>
+                        <td>持续</td>
+                    </tr>
+                    <tr>
+                        <td><span style="color: #f97316;"><i class="fas fa-utensils"></i> D2 营养</span></td>
+                        <td>挑食偏食较严重</td>
+                        <td>营养搭配指导，增加蛋白质摄入，规律三餐，减少零食</td>
+                        <td>提升至80分以上</td>
+                        <td>3个月</td>
+                    </tr>
+                    <tr>
+                        <td><span style="color: #10b981;"><i class="fas fa-running"></i> D3 运动</span></td>
+                        <td>运动量基本达标</td>
+                        <td>增加纵向运动频率至5-7次/周，推荐跳绳、摸高、篮球</td>
+                        <td>提升至80分以上</td>
+                        <td>2个月</td>
+                    </tr>
+                    <tr>
+                        <td><span style="color: #f43f5e;"><i class="fas fa-heart"></i> D4 情绪</span></td>
+                        <td>偶发焦虑情绪</td>
+                        <td>心理疏导，营造轻松家庭氛围，避免过高期望压力</td>
+                        <td>提升至85分以上</td>
+                        <td>1个月</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="section-header" style="margin-top: 30px;">
+                <div class="section-number" style="background: linear-gradient(135deg, #f59e0b, #f97316);">05</div>
+                <div>
+                    <div class="section-title">随访计划</div>
+                    <div class="section-subtitle">FOLLOW-UP PLAN</div>
+                </div>
+            </div>
+
+            <div class="two-column">
+                <div>
+                    <h4 style="font-size: 14px; color: #475569; margin-bottom: 15px;"><i class="fas fa-home"></i> 家庭监测指标</h4>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-title">身高体重测量</div>
+                            <div class="timeline-desc">每月1次，记录生长曲线</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-title">睡眠记录</div>
+                            <div class="timeline-desc">每日记录睡眠时长和质量</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-title">饮食打卡</div>
+                            <div class="timeline-desc">每日记录三餐和零食摄入</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-title">运动记录</div>
+                            <div class="timeline-desc">每日记录运动类型和时长</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 style="font-size: 14px; color: #475569; margin-bottom: 15px;"><i class="fas fa-hospital"></i> 复查安排</h4>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-title">Y-CAS评估复评</div>
+                            <div class="timeline-desc">每3个月进行一次4D维度复评</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-title">骨龄片复查</div>
+                            <div class="timeline-desc">每6个月监测生长潜力变化</div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-title">血常规/生化检查</div>
+                            <div class="timeline-desc">按需进行营养状况监测</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="highlight-box danger" style="margin-top: 20px;">
+                <strong style="color: #991b1b;"><i class="fas fa-exclamation-triangle"></i> 需要立即联系健康师的情况：</strong>
+                <ul style="margin-top: 10px; margin-left: 20px; color: #7f1d1d; font-size: 13px;">
+                    <li>连续3个月身高增长 &lt; 0.5cm</li>
+                    <li>体重下降超过5%</li>
+                    <li>出现第二性征提前发育迹象</li>
+                </ul>
+            </div>
+
+            <div class="page-footer">
+                <span>益康顺儿童健康管理</span>
+                <span>第 5 页 / 共 6 页</span>
+            </div>
+        </div>
+
+        <!-- Page 6: Conclusion -->
+        <div class="page content-page">
+            <div class="section-header">
+                <div class="section-number">06</div>
+                <div>
+                    <div class="section-title">报告结论</div>
+                    <div class="section-subtitle">REPORT CONCLUSION</div>
+                </div>
+            </div>
+
+            <div class="summary-box">
+                <div class="summary-title">
+                    <i class="fas fa-clipboard-check"></i>
+                    综合评估结论
+                </div>
+                <table class="data-table" style="margin-bottom: 0;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 25%; background: transparent; border: none;"><strong>当前生长状态</strong></td>
+                            <td style="background: transparent; border: none;">身高体重均在正常范围内，年增长率正常</td>
+                        </tr>
+                        <tr>
+                            <td style="background: transparent; border: none;"><strong>4D维度分析</strong></td>
+                            <td style="background: transparent; border: none;">优势：深度睡眠(85分) | 短板：精准营养(68分)</td>
+                        </tr>
+                        <tr>
+                            <td style="background: transparent; border: none;"><strong>生长潜力</strong></td>
+                            <td style="background: transparent; border: none;">通过4D干预预计可突破遗传身高4-6cm</td>
+                        </tr>
+                        <tr>
+                            <td style="background: transparent; border: none;"><strong>风险等级</strong></td>
+                            <td style="background: transparent; border: none;"><span class="risk-low"><span class="risk-dot"></span>低风险</span></td>
+                        </tr>
+                        <tr>
+                            <td style="background: transparent; border: none;"><strong>干预紧迫性</strong></td>
+                            <td style="background: transparent; border: none;"><span class="badge-good" style="font-size: 12px; padding: 4px 12px;">积极干预</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="info-card" style="border-left-color: #0c9af0;">
+                <div class="info-card-title" style="color: #0c9af0;">
+                    <i class="fas fa-tasks"></i>
+                    家长行动清单
+                </div>
+                <ul class="action-list">
+                    <li class="action-item">
+                        <span class="action-number">1</span>
+                        <span class="action-text">确认干预方案并签署服务协议</span>
+                    </li>
+                    <li class="action-item">
+                        <span class="action-number">2</span>
+                        <span class="action-text">建立1v1专属服务群，对接健康师</span>
+                    </li>
+                    <li class="action-item">
+                        <span class="action-number">3</span>
+                        <span class="action-text">开始每日打卡（睡眠、饮食、运动）</span>
+                    </li>
+                    <li class="action-item">
+                        <span class="action-number">4</span>
+                        <span class="action-text">参加第1次月度复盘会议</span>
+                    </li>
+                    <li class="action-item" style="border-bottom: none;">
+                        <span class="action-number">5</span>
+                        <span class="action-text">3个月后复查Y-CAS评估</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="info-card" style="background: linear-gradient(135deg, #f0f7ff, #f0fdf4); border-left-color: #10b981;">
+                <div class="info-card-title" style="color: #10b981;">
+                    <i class="fas fa-comment-dots"></i>
+                    健康师寄语
+                </div>
+                <p style="font-size: 14px; line-height: 1.8; color: #475569; font-style: italic;">
+                    "小萌目前的生长发育状况整体良好，睡眠维度表现优秀是值得继续保持的优势。建议家长重点关注营养维度，通过科学的营养搭配和饮食习惯培养，配合规律的运动和良好的情绪管理，相信小萌一定能够突破遗传身高，实现理想的成年身高目标。我们将全程陪伴，为孩子的健康成长保驾护航！"
+                </p>
+                <div style="text-align: right; margin-top: 15px;">
+                    <span style="font-size: 13px; color: #64748b;">专属健康师：李医生</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; padding: 25px; background: #f8fafc; border-radius: 12px; text-align: center;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 15px;">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #0c9af0, #14b8a6); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: 700;">益</div>
+                    <div style="text-align: left;">
+                        <div style="font-weight: 700; color: #0f172a;">益康顺儿童健康管理</div>
+                        <div style="font-size: 12px; color: #64748b;">专注家庭场景的"儿童健康"管理</div>
+                    </div>
+                </div>
+                <p style="font-size: 12px; color: #94a3b8; margin-bottom: 8px;">医育结合 · 4D科学 · 5S品质</p>
+                <p style="font-size: 11px; color: #cbd5e1;">本报告基于Y-CAS™多维度动态评估系统生成 | 系统版本：v4.0</p>
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: #fef2f2; border-radius: 8px; font-size: 11px; color: #991b1b; text-align: center;">
+                <strong>免责声明：</strong>本评估报告仅供参考，不能替代医生的专业诊断和治疗建议。如发现孩子生长发育异常，请及时就医。
+            </div>
+
+            <div class="page-footer">
+                <span>益康顺儿童健康管理</span>
+                <span>第 6 页 / 共 6 页</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Radar Chart
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['D1 深度睡眠', 'D2 精准营养', 'D3 纵向运动', 'D4 情绪与习惯'],
+                datasets: [{
+                    label: '当前得分',
+                    data: [85, 68, 72, 78],
+                    backgroundColor: 'rgba(12, 154, 240, 0.2)',
+                    borderColor: 'rgba(12, 154, 240, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(12, 154, 240, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(12, 154, 240, 1)'
+                }, {
+                    label: '目标得分',
+                    data: [90, 85, 85, 85],
+                    backgroundColor: 'rgba(20, 184, 166, 0.1)',
+                    borderColor: 'rgba(20, 184, 166, 0.6)',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    pointBackgroundColor: 'rgba(20, 184, 166, 0.6)',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        min: 0,
+                        ticks: {
+                            stepSize: 20,
+                            font: { size: 10 },
+                            color: '#94a3b8'
+                        },
+                        pointLabels: {
+                            font: { size: 12, weight: '600' },
+                            color: '#475569'
+                        },
+                        grid: { color: '#e2e8f0' }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 15, usePointStyle: true, font: { size: 12 } }
+                    }
+                }
+            }
+        });
+
+        // PDF Export Function
+        function exportPDF() {
+            const element = document.getElementById('report-content');
+            const opt = {
+                margin: 0,
+                filename: 'Y-CAS儿童身高管理评估报告.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 2,
+                    useCORS: true,
+                    logging: false
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait'
+                },
+                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+            };
+
+            // Show loading
+            const btn = document.querySelector('.export-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 生成中...';
+            btn.disabled = true;
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }).catch(err => {
+                console.error('PDF导出失败:', err);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                alert('PDF导出失败，请重试');
+            });
+        }
+
+        // Animate progress bars on load
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.progress-fill').forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 300);
+            });
+        });
+    </script>
+</body>
+</html>

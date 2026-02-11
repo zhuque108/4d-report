@@ -1,0 +1,78 @@
+/* Y-CAS 打印优化样式 */
+
+@media print {
+  /* 隐藏非打印元素 */
+  .no-print,
+  #toolbar,
+  #input-panel {
+    display: none !important;
+  }
+
+  /* 页面背景 */
+  body {
+    background: white !important;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* 页面设置 */
+  .page {
+    box-shadow: none !important;
+    margin: 0 !important;
+    page-break-after: always;
+    page-break-inside: avoid;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page:last-child {
+    page-break-after: auto;
+  }
+
+  /* 封面页保留背景 */
+  .cover-page {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* 报告容器 */
+  #report-container {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* 确保图表打印 */
+  canvas {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* 确保渐变背景打印 */
+  .score-card .score-icon,
+  .page-header .header-icon,
+  .prediction-item .pred-fill,
+  .progress-bar-fill {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* 表格打印 */
+  .intervention-table th,
+  .intervention-table td {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* 标签打印 */
+  .risk-badge,
+  .priority-tag {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* 页面大小 */
+  @page {
+    size: A4;
+    margin: 0;
+  }
+}

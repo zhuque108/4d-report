@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Y-CAS儿童身高管理评估报告</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            200: '#bae0fd',
+                            300: '#7ccbfd',
+                            400: '#36b3fa',
+                            500: '#0c9af0',
+                            600: '#027fd1',
+                            700: '#0367a9',
+                            800: '#075585',
+                            900: '#0c486e',
+                        },
+                        accent: {
+                            teal: '#14b8a6',
+                            coral: '#f97316',
+                            purple: '#8b5cf6',
+                            rose: '#f43f5e',
+                        },
+                        neutral: {
+                            50: '#fafafa',
+                            100: '#f5f5f5',
+                            200: '#e5e5e5',
+                            300: '#d4d4d4',
+                            400: '#a3a3a3',
+                            500: '#737373',
+                            600: '#525252',
+                            700: '#404040',
+                            800: '#262626',
+                            900: '#171717',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans SC', 'system-ui', 'sans-serif'],
+                        display: ['Playfair Display', 'serif'],
+                    },
+                    boxShadow: {
+                        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+                        'elevated': '0 10px 40px -10px rgba(0, 0, 0, 0.1), 0 4px 12px -2px rgba(0, 0, 0, 0.05)',
+                        'glow': '0 0 40px -10px rgba(12, 154, 240, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            background: linear-gradient(180deg, #fafafa 0%, #f0f7ff 30%, #f0fdf4 70%, #fafafa 100%);
+            min-height: 100vh;
+            font-feature-settings: "kern" 1;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Premium Card Style */
+        .premium-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.06), 0 8px 48px -8px rgba(12, 154, 240, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .premium-card:hover {
+            box-shadow: 0 8px 40px -8px rgba(0, 0, 0, 0.1), 0 16px 64px -16px rgba(12, 154, 240, 0.12);
+            transform: translateY(-2px);
+        }
+        
+        /* Section Header */
+        .section-number {
+            background: linear-gradient(135deg, #0c9af0 0%, #14b8a6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+        }
+        
+        /* Gradient Borders */
+        .gradient-border-top {
+            position: relative;
+        }
+        .gradient-border-top::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #0c9af0 0%, #14b8a6 33%, #8b5cf6 66%, #f43f5e 100%);
+            border-radius: 3px 3px 0 0;
+        }
+        
+        /* Score Ring */
+        .score-ring {
+            position: relative;
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 26px;
+            background: conic-gradient(var(--ring-color) var(--ring-progress), #f3f4f6 0deg);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .score-ring::before {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            background: white;
+            border-radius: 50%;
+        }
+        
+        .score-ring span {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .score-ring.excellent { --ring-color: #10b981; }
+        .score-ring.good { --ring-color: #0c9af0; }
+        .score-ring.average { --ring-color: #f97316; }
+        .score-ring.poor { --ring-color: #f43f5e; }
+        
+        /* Input Fields */
+        .premium-input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+            padding: 8px 0;
+        }
+        
+        .premium-input:focus {
+            outline: none;
+            border-bottom-color: #0c9af0;
+        }
+        
+        .premium-input::placeholder {
+            color: #9ca3af;
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+        }
+        
+        .status-badge.excellent {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+        }
+        
+        .status-badge.good {
+            background: linear-gradient(135deg, #e0effe 0%, #bae0fd 100%);
+            color: #075585;
+        }
+        
+        .status-badge.warning {
+            background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+            color: #9a3412;
+        }
+        
+        .status-badge.danger {
+            background: linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%);
+            color: #9f1239;
+        }
+        
+        /* Dimension Cards */
+        .dimension-card {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .dimension-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .dimension-card:hover::after {
+            width: 6px;
+        }
+        
+        .dimension-card.d1::after { background: linear-gradient(180deg, #6366f1 0%, #8b5cf6 100%); }
+        .dimension-card.d2::after { background: linear-gradient(180deg, #f97316 0%, #fb923c 100%); }
+        .dimension-card.d3::after { background: linear-gradient(180deg, #10b981 0%, #34d399 100%); }
+        .dimension-card.d4::after { background: linear-gradient(180deg, #f43f5e 0%, #fb7185 100%); }
+        
+        /* Progress Bars */
+        .premium-progress {
+            height: 8px;
+            background: #f3f4f6;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .premium-progress-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .premium-progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Table Styles */
+        .premium-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        .premium-table th {
+            background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 11px;
+            color: #64748b;
+            padding: 16px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .premium-table td {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background 0.2s ease;
+        }
+        
+        .premium-table tr:hover td {
+            background: #f8fafc;
+        }
+        
+        /* Checkbox Custom */
+        .premium-checkbox {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .premium-checkbox:checked {
+            background: linear-gradient(135deg, #0c9af0 0%, #14b8a6 100%);
+            border-color: transparent;
+        }
+        
+        .premium-checkbox:checked::after {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 1px;
+            width: 6px;
+            height: 11px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        
+        /* Radio Custom */
+        .premium-radio {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #d1d5db;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .premium-radio:checked {
+            border-color: #0c9af0;
+        }
+        
+        .premium-radio:checked::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            background: linear-gradient(135deg, #0c9af0 0%, #14b8a6 100%);
+            border-radius: 50%;
+        }
+        
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0c9af0 0%, #14b8a6 100%);
+            box-shadow: 0 8px 32px -8px rgba(12, 154, 240, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+        
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 12px 40px -8px rgba(12, 154, 240, 0.6);
+        }
+        
+        /* Section Animation */
+        .animate-section {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .animate-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Header Glass Effect */
+        .header-glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Logo Animation */
+        .logo-pulse {
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+        
+        @keyframes logoPulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(12, 154, 240, 0.4); }
+            50% { box-shadow: 0 0 0 12px rgba(12, 154, 240, 0); }
+        }
+        
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+        
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-8px);
+            padding: 8px 12px;
+            background: #1f2937;
+            color: white;
+            font-size: 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+        }
+        
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-4px);
+        }
+        
+        /* Risk Level Indicators */
+        .risk-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .risk-indicator::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .risk-low {
+            background: #ecfdf5;
+            color: #065f46;
+        }
+        .risk-low::before { background: #10b981; }
+        
+        .risk-medium {
+            background: #fffbeb;
+            color: #92400e;
+        }
+        .risk-medium::before { background: #f59e0b; }
+        
+        .risk-high {
+            background: #fef2f2;
+            color: #991b1b;
+        }
+        .risk-high::before { background: #ef4444; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.2); }
+        }
+        
+        /* Timeline */
+        .timeline-item {
+            position: relative;
+            padding-left: 32px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 8px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0c9af0 0%, #14b8a6 100%);
+            border: 3px solid white;
+            box-shadow: 0 0 0 2px #e0effe;
+        }
+        
+        .timeline-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 13px;
+            top: 24px;
+            width: 2px;
+            height: calc(100% - 8px);
+            background: #e0effe;
+        }
+    </style>
+</head>
+<body class="font-sans text-neutral-700">
+    <!-- Header -->
+    <header class="header-glass sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-500 to-accent-teal flex items-center justify-center text-white font-bold text-xl logo-pulse">
+                        益
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-neutral-800 tracking-tight">儿童身高管理评估报告</h1>
+                        <p class="text-xs text-primary-600 font-medium tracking-wide">Y-CAS™ MULTI-DIMENSIONAL ASSESSMENT SYSTEM</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-8">
+                    <div class="text-right">
+                        <p class="text-xs text-neutral-400 uppercase tracking-wider">评估编号</p>
+                        <p class="text-sm font-semibold text-primary-700 font-mono">YCAS-2025-001</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-neutral-400 uppercase tracking-wider">评估日期</p>
+                        <p class="text-sm font-semibold text-neutral-700">2025年2月10日</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-8 space-y-8">
+        <!-- Hero Section -->
+        <section class="animate-section">
+            <div class="premium-card rounded-2xl p-8 gradient-border-top relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary-100 to-accent-teal/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <p class="text-sm text-neutral-500 mb-1">评估对象</p>
+                            <h2 class="text-3xl font-bold text-neutral-800">张小萌 <span class="text-lg font-normal text-neutral-500">/ 女 / 8岁3个月</span></h2>
+                        </div>
+                        <div class="text-center">
+                            <div class="score-ring excellent mb-2" style="--ring-progress: 252deg;">
+                                <span class="text-emerald-600">76</span>
+                            </div>
+                            <p class="text-xs text-neutral-500">综合评分</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-4">
+                        <div class="bg-neutral-50 rounded-xl p-4 text-center">
+                            <p class="text-2xl font-bold text-neutral-800">125.5</p>
+                            <p class="text-xs text-neutral-500 mt-1">身高 cm</p>
+                            <span class="status-badge good mt-2">正常范围</span>
+                        </div>
+                        <div class="bg-neutral-50 rounded-xl p-4 text-center">
+                            <p class="text-2xl font-bold text-neutral-800">24.2</p>
+                            <p class="text-xs text-neutral-500 mt-1">体重 kg</p>
+                            <span class="status-badge good mt-2">正常</span>
+                        </div>
+                        <div class="bg-neutral-50 rounded-xl p-4 text-center">
+                            <p class="text-2xl font-bold text-neutral-800">15.4</p>
+                            <p class="text-xs text-neutral-500 mt-1">BMI</p>
+                            <span class="status-badge good mt-2">正常</span>
+                        </div>
+                        <div class="bg-neutral-50 rounded-xl p-4 text-center">
+                            <p class="text-2xl font-bold text-neutral-800">P50</p>
+                            <p class="text-xs text-neutral-500 mt-1">身高百分位</p>
+                            <span class="status-badge good mt-2">中等</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 1: Basic Info -->
+        <section class="animate-section">
+            <div class="premium-card rounded-2xl p-8 gradient-border-top">
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
+                        <i class="fas fa-user-circle text-primary-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="section-number text-sm">01</span>
+                        <h2 class="text-xl font-bold text-neutral-800">宝贝基础档案</h2>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+                    <!-- Basic Info -->
+                    <div class="space-y-6">
+                        <h3 class="text-sm font-semibold text-neutral-400 uppercase tracking-wider">基本信息</h3>
+                        <div class="grid grid-cols-2 gap-x-6 gap-y-5">
+                            <div class="space-y-2">
+                                <label class="text-xs text-neutral-500">姓名</label>
+                                <input type="text" class="premium-input w-full text-neutral-800 font-medium" value="张小萌">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs text-neutral-500">性别</label>
+                                <div class="flex space-x-6 pt-2">
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="radio" name="gender" class="premium-radio" checked>
+                                        <span class="text-sm">女</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 cursor-pointer">
+                                        <input type="radio" name="gender" class="premium-radio">
+                                        <span class="text-sm">男</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs text-neutral-500">出生日期</label>
+                                <input type="date" class="premium-input w-full text-neutral-800" value="2016-11-15">
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs text-neutral-500">实际年龄</label>
+                                <input type="text" class="premium-input w-full text-neutral-800" value="8岁3个月" readonly>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs text-neutral-500">当前身高</label>
+                                <div class="flex items-baseline">
+                                    <input type="number" class="premium-input w-24 text-2xl font-bold text-primary-700" value="125.5">
+                                    <span class="ml-2 text-sm text-neutral-400">cm</span>
+                                </div>
+                            </div>
+                            <div class="space-y-2">
+                                <label class="text-xs text-neutral-500">当前体重</label>
+                                <div class="flex items-baseline">
+                                    <input type="number" class="premium-input w-24 text-2xl font-bold text-primary-700" value="24.2">
+                                    <span class="ml-2 text-sm text-neutral-400">kg</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Genetic Background -->
+                    <div class="space-y-6">
+                        <h3 class="text-sm font-semibold text-neutral-400 uppercase tracking-wider">遗传背景</h3>
+                        <div class="bg-gradient-to-br from-primary-50 to-accent-teal/5 rounded-xl p-6">
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div class="space-y-2">
+                                    <label class="text-xs text-neutral-500">父亲身高</label>
+                                    <div class="flex items-baseline">
+                                        <input type="number" class="premium-input w-20 text-lg font-semibold text-neutral-800 bg-white/50 rounded px-2" value="175">
+                                        <span class="ml-2 text-xs text-neutral-400">cm</span>
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <label class="text-xs text-neutral-500">母亲身高</label>
+                                    <div class="flex items-baseline">
+                                        <input type="number" class="premium-input w-20 text-lg font-semibold text-neutral-800 bg-white/50 rounded px-2" value="162">
+                                        <span class="ml-2 text-xs text-neutral-400">cm</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="border-t border-primary-200 pt-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-xs text-neutral-500 mb-1">遗传靶身高</p>
+                                        <p class="text-3xl font-bold text-primary-700">162.0 <span class="text-base font-normal text-neutral-500">cm</span></p>
+                                        <p class="text-xs text-neutral-400 mt-1">置信区间: 157 ~ 167 cm</p>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-soft">
+                                            <i class="fas fa-dna text-primary-500 text-2xl"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-neutral-400 leading-relaxed">
+                            <i class="fas fa-info-circle text-primary-400 mr-1"></i>
+                            计算公式: 女孩 = (父亲身高 + 母亲身高 - 13) ÷ 2 ± 5cm
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: 4D Assessment -->
+        <section class="animate-section">
+            <div class="premium-card rounded-2xl p-8 gradient-border-top">
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-purple/20 to-accent-rose/20 flex items-center justify-center">
+                        <i class="fas fa-chart-pie text-accent-purple text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="section-number text-sm">02</span>
+                        <h2 class="text-xl font-bold text-neutral-800">4D多维度评估结果</h2>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                    <!-- Radar Chart -->
+                    <div class="lg:col-span-2 bg-neutral-50 rounded-2xl p-6">
+                        <h3 class="text-sm font-semibold text-neutral-600 mb-4 text-center">4D维度雷达图</h3>
+                        <div style="height: 300px;">
+                            <canvas id="radarChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Dimension Scores -->
+                    <div class="lg:col-span-3 space-y-4">
+                        <h3 class="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-4">各维度评分</h3>
+                        
+                        <!-- D1 -->
+                        <div class="dimension-card d1 premium-card rounded-xl p-5 pl-6">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-500 flex items-center justify-center text-white">
+                                        <i class="fas fa-moon text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-neutral-800">D1 深度睡眠</p>
+                                        <p class="text-xs text-neutral-500">Deep Sleep · 生长激素脉冲工厂</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <div class="text-right">
+                                        <input type="number" class="w-16 text-center text-2xl font-bold text-indigo-600 bg-transparent" value="85" max="100" min="0">
+                                        <span class="text-xs text-neutral-400">/100</span>
+                                    </div>
+                                    <span class="status-badge excellent">优秀</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-neutral-100">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-neutral-500">入睡时间</span>
+                                    <span class="text-neutral-700 font-medium">21:00 <span class="text-emerald-500 text-xs">✓ 理想</span></span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm mt-2">
+                                    <span class="text-neutral-500">睡眠时长</span>
+                                    <span class="text-neutral-700 font-medium">9.5小时 <span class="text-emerald-500 text-xs">✓ 充足</span></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- D2 -->
+                        <div class="dimension-card d2 premium-card rounded-xl p-5 pl-6">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-white">
+                                        <i class="fas fa-utensils text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-neutral-800">D2 精准营养</p>
+                                        <p class="text-xs text-neutral-500">Precision Nutrition · IGF-1合成燃料</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <div class="text-right">
+                                        <input type="number" class="w-16 text-center text-2xl font-bold text-orange-600 bg-transparent" value="72" max="100" min="0">
+                                        <span class="text-xs text-neutral-400">/100</span>
+                                    </div>
+                                    <span class="status-badge warning">需改善</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-neutral-100">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-neutral-500">挑食程度</span>
+                                    <span class="text-orange-600 font-medium">中度 <span class="text-xs">⚠ 重点关注</span></span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm mt-2">
+                                    <span class="text-neutral-500">蛋白质摄入</span>
+                                    <span class="text-neutral-700 font-medium">0.8g/kg <span class="text-orange-500 text-xs">↓ 不足</span></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- D3 -->
+                        <div class="dimension-card d3 premium-card rounded-xl p-5 pl-6">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center text-white">
+                                        <i class="fas fa-person-running text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-neutral-800">D3 纵向运动</p>
+                                        <p class="text-xs text-neutral-500">Vertical Sports · 沃尔夫定律力学刺激</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <div class="text-right">
+                                        <input type="number" class="w-16 text-center text-2xl font-bold text-emerald-600 bg-transparent" value="68" max="100" min="0">
+                                        <span class="text-xs text-neutral-400">/100</span>
+                                    </div>
+                                    <span class="status-badge warning">需改善</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-neutral-100">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-neutral-500">运动频率</span>
+                                    <span class="text-neutral-700 font-medium">3次/周 <span class="text-orange-500 text-xs">↓ 偏少</span></span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm mt-2">
+                                    <span class="text-neutral-500">纵向运动占比</span>
+                                    <span class="text-neutral-700 font-medium">40% <span class="text-orange-500 text-xs">↓ 偏低</span></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- D4 -->
+                        <div class="dimension-card d4 premium-card rounded-xl p-5 pl-6">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center text-white">
+                                        <i class="fas fa-heart text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-semibold text-neutral-800">D4 情绪与习惯</p>
+                                        <p class="text-xs text-neutral-500">Mood & Habit · 皮质醇抑制阻断</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <div class="text-right">
+                                        <input type="number" class="w-16 text-center text-2xl font-bold text-rose-600 bg-transparent" value="78" max="100" min="0">
+                                        <span class="text-xs text-neutral-400">/100</span>
+                                    </div>
+                                    <span class="status-badge good">良好</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-neutral-100">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-neutral-500">情绪状态</span>
+                                    <span class="text-neutral-700 font-medium">稳定 <span class="text-emerald-500 text-xs">✓ 良好</span></span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm mt-2">
+                                    <span class="text-neutral-500">家庭氛围</span>
+                                    <span class="text-neutral-700 font-medium">和谐 <span class="text-emerald-500 text-xs">✓ 理想</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Risk Assessment -->
+        <section class="animate-section">
+            <div class="premium-card rounded-2xl p-8 gradient-border-top">
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-100 to-orange-100 flex items-center justify-center">
+                        <i class="fas fa-shield-heart text-rose-500 text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="section-number text-sm">03</span>
+                        <h2 class="text-xl font-bold text-neutral-800">风险评估与预警</h2>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-gradient-to-br from-emerald-50 to-emerald-100/50 rounded-xl p-5 border border-emerald-100">
+                        <div class="flex items-center justify-between mb-3">
+                            <i class="fas fa-chart-line text-emerald-500 text-xl"></i>
+                            <span class="risk-indicator risk-low">低风险</span>
+                        </div>
+                        <p class="font-semibold text-neutral-800 mb-1">生长迟缓风险</p>
+                        <p class="text-xs text-neutral-500">年增长速率正常，生长曲线稳定</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-emerald-50 to-emerald-100/50 rounded-xl p-5 border border-emerald-100">
+                        <div class="flex items-center justify-between mb-3">
+                            <i class="fas fa-clock text-emerald-500 text-xl"></i>
+                            <span class="risk-indicator risk-low">低风险</span>
+                        </div>
+                        <p class="font-semibold text-neutral-800 mb-1">早熟风险</p>
+                        <p class="text-xs text-neutral-500">骨龄与实际年龄一致，发育正常</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-amber-50 to-orange-100/50 rounded-xl p-5 border border-amber-100">
+                        <div class="flex items-center justify-between mb-3">
+                            <i class="fas fa-carrot text-amber-500 text-xl"></i>
+                            <span class="risk-indicator risk-medium">中风险</span>
+                        </div>
+                        <p class="font-semibold text-neutral-800 mb-1">营养不良风险</p>
+                        <p class="text-xs text-neutral-500">挑食偏食较严重，蛋白质摄入不足</p>
+                    </div>
+                    <div class="bg-gradient-to-br from-emerald-50 to-emerald-100/50 rounded-xl p-5 border border-emerald-100">
+                        <div class="flex items-center justify-between mb-3">
+                            <i class="fas fa-brain text-emerald-500 text-xl"></i>
+                            <span class="risk-indicator risk-low">低风险</span>
+                        </div>
+                        <p class="font-semibold text-neutral-800 mb-1">心理问题风险</p>
+                        <p class="text-xs text-neutral-500">情绪稳定，家庭氛围和谐</p>
+                    </div>
+                </div>
+
+                <!-- Priority Alert -->
+                <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-6 border border-amber-200">
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                            <i class="fas fa-exclamation-circle text-amber-600 text-xl"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-amber-800 mb-2">优先关注事项</h4>
+                            <p class="text-sm text-amber-700 mb-4">根据评估结果，建议重点关注以下方面：</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="flex items-center space-x-3 bg-white/60 rounded-lg p-3">
+                                    <span class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-sm font-bold">1</span>
+                                    <div>
+                                        <p class="text-sm font-medium text-neutral-800">改善挑食问题</p>
+                                        <p class="text-xs text-neutral-500">增加蛋白质摄入至1.2g/kg/日</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3 bg-white/60 rounded-lg p-3">
+                                    <span class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-sm font-bold">2</span>
+                                    <div>
+                                        <p class="text-sm font-medium text-neutral-800">增加纵向运动</p>
+                                        <p class="text-xs text-neutral-500">每周至少5次，每次30分钟</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Growth Prediction -->
+        <section class="animate-section">
+            <div class="premium-card rounded-2xl p-8 gradient-border-top">
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-100 to-accent-teal/30 flex items-center justify-center">
+                        <i class="fas fa-wand-magic-sparkles text-primary-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="section-number text-sm">04</span>
+                        <h2 class="text-xl font-bold text-neutral-800">生长潜力预测</h2>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Height Prediction -->
+                    <div class="space-y-6">
+                        <h3 class="text-sm font-semibold text-neutral-400 uppercase tracking-wider">成年身高预测</h3>
+                        
+                        <div class="space-y-5">
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm text-neutral-600">遗传靶身高</span>
+                                    <span class="text-lg font-semibold text-neutral-400">162 cm</span>
+                                </div>
+                                <div class="premium-progress">
+                                    <div class="premium-progress-bar bg-gradient-to-r from-neutral-400 to-neutral-500" style="width: 65%;"></div>
+                                </div>
+                                <p class="text-xs text-neutral-400 mt-1">置信区间: 157 ~ 167 cm</p>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm text-neutral-600">当前生长轨迹预测</span>
+                                    <span class="text-lg font-semibold text-amber-600">160 cm</span>
+                                </div>
+                                <div class="premium-progress">
+                                    <div class="premium-progress-bar bg-gradient-to-r from-amber-400 to-amber-500" style="width: 62%;"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-sm text-neutral-600">4D优化后预测</span>
+                                    <span class="text-lg font-semibold text-emerald-600">166 cm</span>
+                                </div>
+                                <div class="premium-progress">
+                                    <div class="premium-progress-bar bg-gradient-to-r from-emerald-400 to-emerald-500" style="width: 72%;"></div>
+                                </div>
+                                <p class="text-xs text-emerald-600 mt-1 font-medium">↑ 较遗传靶身高 +4 cm</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Growth Space -->
+                    <div class="bg-gradient-to-br from-primary-50 to-accent-teal/10 rounded-xl p-6">
+                        <h3 class="text-sm font-semibold text-neutral-600 mb-6">剩余生长空间</h3>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="text-center p-4 bg-white rounded-xl shadow-soft">
+                                <p class="text-3xl font-bold text-primary-700">8.5</p>
+                                <p class="text-xs text-neutral-500 mt-1">岁 (当前骨龄)</p>
+                            </div>
+                            <div class="text-center p-4 bg-white rounded-xl shadow-soft">
+                                <p class="text-3xl font-bold text-primary-700">15</p>
+                                <p class="text-xs text-neutral-500 mt-1">岁 (生长板闭合)</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-xl p-5 text-center">
+                            <p class="text-sm text-neutral-500 mb-2">剩余生长潜力</p>
+                            <p class="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-accent-teal">40.5</p>
+                            <p class="text-lg text-neutral-600">cm</p>
+                            <p class="text-xs text-neutral-400 mt-2">干预时间窗口: 约6.5年</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Intervention Plan -->
+        <section class="animate-section">
+            <div class="premium-card rounded-2xl p-8 gradient-border-top">
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-teal/20 to-primary-200 flex items-center justify-center">
+                        <i class="fas fa-clipboard-list text-accent-teal text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="section-number text-sm">05</span>
+                        <h2 class="text-xl font-bold text-neutral-800">个性化干预方案</h2>
+                    </div>
+                </div>
+
+                <!-- Intervention Table -->
+                <div class="overflow-x-auto mb-8">
+                    <table class="premium-table">
+                        <thead>
+                            <tr>
+                                <th>维度</th>
+                                <th>核心问题</th>
+                                <th>干预重点</th>
+                                <th class="text-center">预期改善</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-moon text-indigo-500"></i>
+                                        <span class="font-medium">D1 深度睡眠</span>
+                                    </div>
+                                </td>
+                                <td class="text-neutral-600">睡眠质量良好，保持即可</td>
+                                <td class="text-neutral-600">维持规律作息，21:30前入睡</td>
+                                <td class="text-center"><span class="status-badge excellent">1个月</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-utensils text-orange-500"></i>
+                                        <span class="font-medium">D2 精准营养</span>
+                                    </div>
+                                </td>
+                                <td class="text-neutral-600">挑食偏食较严重</td>
+                                <td class="text-neutral-600">营养搭配指导，蛋白质补充</td>
+                                <td class="text-center"><span class="status-badge warning">3个月</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-person-running text-emerald-500"></i>
+                                        <span class="font-medium">D3 纵向运动</span>
+                                    </div>
+                                </td>
+                                <td class="text-neutral-600">运动量不足，频率偏低</td>
+                                <td class="text-neutral-600">增加纵向运动，跳绳/摸高</td>
+                                <td class="text-center"><span class="status-badge warning">2个月</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <i class="fas fa-heart text-rose-500"></i>
+                                        <span class="font-medium">D4 情绪与习惯</span>
+                                    </div>
+                                </td>
+                                <td class="text-neutral-600">偶发焦虑情绪</td>
+                                <td class="text-neutral-600">心理疏导，减轻学业压力</td>
+                                <td class="text-center"><span class="status-badge good">1个月</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Section 6: Follow-up -->
+        <section class="animate-section">
+            <div class="premium-card rounded-2xl p-8 gradient-border-top">
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary-100 to-violet-100 flex items-center justify-center">
+                        <i class="fas fa-calendar-days text-primary-600 text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="section-number text-sm">06</span>
+                        <h2 class="text-xl font-bold text-neutral-800">随访计划</h2>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Monitoring Plan -->
+                    <div>
+                        <h3 class="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-4">家庭监测指标</h3>
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between p-4 bg-neutral-50 rounded-xl">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+                                        <i class="fas fa-ruler-vertical text-primary-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-neutral-800">身高测量</p>
+                                        <p class="text-xs text-neutral-500">每月1次，固定时间</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-medium text-primary-600 bg-primary-50 px-3 py-1 rounded-full">必做</span>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-neutral-50 rounded-xl">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+                                        <i class="fas fa-weight-scale text-primary-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-neutral-800">体重监测</p>
+                                        <p class="text-xs text-neutral-500">每月1次，保持稳定</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-medium text-primary-600 bg-primary-50 px-3 py-1 rounded-full">必做</span>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-neutral-50 rounded-xl">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-lg bg-indigo-100 flex items-center justify-center">
+                                        <i class="fas fa-moon text-indigo-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-neutral-800">睡眠记录</p>
+                                        <p class="text-xs text-neutral-500">每日记录，打卡工具</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-medium text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">每日</span>
+                            </div>
+                            <div class="flex items-center justify-between p-4 bg-neutral-50 rounded-xl">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
+                                        <i class="fas fa-utensils text-orange-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-neutral-800">饮食打卡</p>
+                                        <p class="text-xs text-neutral-500">每日记录，营养均衡</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs font-medium text-orange-600 bg-orange-50 px-3 py-1 rounded-full">每日</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alert Conditions -->
+                    <div class="bg-gradient-to-br from-rose-50 to-orange-50 rounded-xl p-6 border border-rose-100">
+                        <h3 class="text-sm font-semibold text-rose-700 uppercase tracking-wider mb-4">
+                            <i class="fas fa-triangle-exclamation mr-2"></i>需立即联系健康师的情况
+                        </h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-start space-x-3">
+                                <input type="checkbox" class="premium-checkbox mt-0.5">
+                                <span class="text-sm text-neutral-700">连续3个月身高增长 &lt; 0.5cm</span>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <input type="checkbox" class="premium-checkbox mt-0.5">
+                                <span class="text-sm text-neutral-700">体重下降超过5%</span>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <input type="checkbox" class="premium-checkbox mt-0.5">
+                                <span class="text-sm text-neutral-700">出现第二性征提前发育迹象</span>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <input type="checkbox" class="premium-checkbox mt-0.5">
+                                <span class="text-sm text-neutral-700">持续食欲不振或暴饮暴食</span>
+                            </li>
+                            <li class="flex items-start space-x-3">
+                                <input type="checkbox" class="premium-checkbox mt-0.5">
+                                <span class="text-sm text-neutral-700">情绪低落、社交退缩超过2周</span>
+                            </li>
+                        </ul>
+                        <div class="mt-6 pt-4 border-t border-rose-200">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-rose-600 font-medium">专属健康师</span>
+                                <span class="text-sm text-neutral-700">李医生 138-0000-0000</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Conclusion -->
+        <section class="animate-section">
+            <div class="premium-card rounded-2xl p-8 gradient-border-top">
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-accent-teal/20 to-primary-200 flex items-center justify-center">
+                        <i class="fas fa-file-signature text-accent-teal text-xl"></i>
+                    </div>
+                    <div>
+                        <span class="section-number text-sm">07</span>
+                        <h2 class="text-xl font-bold text-neutral-800">报告结论</h2>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Summary -->
+                    <div class="space-y-6">
+                        <div class="bg-neutral-50 rounded-xl p-6">
+                            <h3 class="text-sm font-semibold text-neutral-600 mb-4">综合评估结论</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-neutral-500">当前生长状态</span>
+                                    <span class="font-semibold text-neutral-800">正常范围内</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-neutral-500">4D维度分析</span>
+                                    <span class="text-sm text-neutral-700">优势: <span class="text-emerald-600">睡眠</span> · 短板: <span class="text-orange-600">营养</span></span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-neutral-500">生长潜力</span>
+                                    <span class="font-semibold text-emerald-600">良好 (+4cm)</span>
+                                </div>
+                                <div class="pt-4 border-t border-neutral-200 grid grid-cols-2 gap-4">
+                                    <div class="text-center p-3 bg-white rounded-lg">
+                                        <p class="text-xs text-neutral-400 mb-1">风险等级</p>
+                                        <span class="risk-indicator risk-low">低风险</span>
+                                    </div>
+                                    <div class="text-center p-3 bg-white rounded-lg">
+                                        <p class="text-xs text-neutral-400 mb-1">干预紧迫性</p>
+                                        <span class="text-xs font-medium text-amber-600 bg-amber-50 px-3 py-1.5 rounded-full">积极干预</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Checklist -->
+                    <div>
+                        <h3 class="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-4">家长行动清单</h3>
+                        <div class="space-y-3">
+                            <div class="timeline-item pb-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="font-medium text-neutral-800">确认干预方案</p>
+                                        <p class="text-xs text-neutral-500">选择适合的服务套餐</p>
+                                    </div>
+                                    <input type="date" class="text-sm border border-neutral-200 rounded-lg px-3 py-1.5">
+                                </div>
+                            </div>
+                            <div class="timeline-item pb-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="font-medium text-neutral-800">建立1v1服务群</p>
+                                        <p class="text-xs text-neutral-500">与健康师建立联系</p>
+                                    </div>
+                                    <input type="date" class="text-sm border border-neutral-200 rounded-lg px-3 py-1.5">
+                                </div>
+                            </div>
+                            <div class="timeline-item pb-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="font-medium text-neutral-800">开始每日打卡</p>
+                                        <p class="text-xs text-neutral-500">记录睡眠、饮食、运动</p>
+                                    </div>
+                                    <input type="date" class="text-sm border border-neutral-200 rounded-lg px-3 py-1.5">
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="font-medium text-neutral-800">参加第1次复盘</p>
+                                        <p class="text-xs text-neutral-500">评估初期干预效果</p>
+                                    </div>
+                                    <input type="date" class="text-sm border border-neutral-200 rounded-lg px-3 py-1.5">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advisor Message -->
+                <div class="mt-8 bg-gradient-to-r from-primary-50 to-accent-teal/10 rounded-xl p-6 border border-primary-100">
+                    <h3 class="text-sm font-semibold text-neutral-700 mb-3">
+                        <i class="fas fa-comment-dots text-primary-500 mr-2"></i>健康师寄语
+                    </h3>
+                    <textarea class="w-full bg-white rounded-xl p-4 text-neutral-700 resize-none border border-primary-100 focus:border-primary-300 focus:outline-none transition-colors" rows="3" placeholder="亲爱的家长，根据本次评估，小萌的整体生长状况良好，睡眠维度表现优秀。建议重点关注营养摄入和运动频率，通过科学的4D干预方案，有望突破遗传靶身高4cm。期待与您一起见证孩子的成长！"></textarea>
+                    <div class="mt-4 flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
+                                <i class="fas fa-user-doctor text-primary-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-neutral-800">李医生</p>
+                                <p class="text-xs text-neutral-500">高级儿童健康管理师</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-neutral-400">2025年2月10日</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="animate-section">
+            <div class="premium-card rounded-2xl p-8 text-center">
+                <div class="flex items-center justify-center space-x-4 mb-6">
+                    <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-500 to-accent-teal flex items-center justify-center text-white font-bold text-2xl">
+                        益
+                    </div>
+                    <div class="text-left">
+                        <p class="text-lg font-bold text-neutral-800">益康顺儿童健康管理</p>
+                        <p class="text-sm text-neutral-500">专注家庭场景的"儿童健康"管理</p>
+                    </div>
+                </div>
+                <p class="text-sm text-neutral-400 mb-2">医育结合 · 4D科学 · 5S品质</p>
+                <div class="text-xs text-neutral-400 space-y-1 mb-6">
+                    <p>本报告基于 Y-CAS™ 多维度动态评估系统生成</p>
+                    <p>系统版本: v4.0 | 报告生成时间: 2025年2月10日 14:30</p>
+                </div>
+                <div class="pt-6 border-t border-neutral-200 text-xs text-neutral-400 max-w-2xl mx-auto">
+                    <p class="mb-2"><strong>免责声明：</strong>本评估报告仅供参考，不能替代医生的专业诊断和治疗建议。如发现孩子生长发育异常，请及时就医。益康顺提供的是非医疗级干预服务，如有病理性问题，我们将协助转诊至医疗机构。</p>
+                    <p>本报告版权归益康顺所有，未经授权不得转载。</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Floating Action Button -->
+    <div class="fab tooltip" data-tooltip="导出报告">
+        <i class="fas fa-download"></i>
+    </div>
+
+    <script>
+        // Radar Chart
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['D1\n深度睡眠', 'D2\n精准营养', 'D3\n纵向运动', 'D4\n情绪习惯'],
+                datasets: [{
+                    label: '当前得分',
+                    data: [85, 72, 68, 78],
+                    backgroundColor: 'rgba(12, 154, 240, 0.15)',
+                    borderColor: 'rgba(12, 154, 240, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(12, 154, 240, 1)',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }, {
+                    label: '目标得分',
+                    data: [90, 85, 85, 85],
+                    backgroundColor: 'rgba(20, 184, 166, 0.08)',
+                    borderColor: 'rgba(20, 184, 166, 0.6)',
+                    borderWidth: 2,
+                    borderDash: [6, 4],
+                    pointBackgroundColor: 'rgba(20, 184, 166, 0.6)',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        min: 0,
+                        ticks: {
+                            stepSize: 20,
+                            font: { size: 10 },
+                            color: '#9ca3af'
+                        },
+                        grid: {
+                            color: 'rgba(0, 0, 0, 0.05)'
+                        },
+                        pointLabels: {
+                            font: {
+                                size: 11,
+                                weight: '600',
+                                family: 'Noto Sans SC'
+                            },
+                            color: '#4b5563'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            font: { size: 12 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.animate-section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Score ring animation
+        function animateScoreRings() {
+            const rings = document.querySelectorAll('.score-ring');
+            rings.forEach(ring => {
+                const progress = ring.style.getPropertyValue('--ring-progress');
+                ring.style.setProperty('--ring-progress', '0deg');
+                setTimeout(() => {
+                    ring.style.setProperty('--ring-progress', progress);
+                }, 300);
+            });
+        }
+
+        // Auto-calculate genetic target height
+        function calculateTargetHeight() {
+            const fatherHeight = parseFloat(document.querySelector('input[value="175"]')?.value) || 0;
+            const motherHeight = parseFloat(document.querySelector('input[value="162"]')?.value) || 0;
+            const gender = document.querySelector('input[name="gender"]:checked')?.nextElementSibling?.textContent?.trim();
+            
+            if (fatherHeight > 0 && motherHeight > 0 && gender) {
+                let targetHeight;
+                if (gender === '男') {
+                    targetHeight = (fatherHeight + motherHeight + 13) / 2;
+                } else {
+                    targetHeight = (fatherHeight + motherHeight - 13) / 2;
+                }
+                // Update display
+            }
+        }
+
+        // Initialize animations on load
+        window.addEventListener('load', () => {
+            animateScoreRings();
+        });
+
+        // Progress bar animation
+        function animateProgressBars() {
+            const bars = document.querySelectorAll('.premium-progress-bar');
+            bars.forEach((bar, index) => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 500 + index * 200);
+            });
+        }
+
+        // Trigger progress animation when section is visible
+        const progressObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateProgressBars();
+                    progressObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('.premium-progress').forEach(el => {
+            progressObserver.observe(el.parentElement);
+        });
+    </script>
+</body>
+</html>
