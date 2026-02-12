@@ -47,7 +47,7 @@
         /* A4 Page Settings */
         .page {
             width: 210mm;
-            min-height: 297mm;
+            height: 297mm;
             margin: 0 auto 20px;
             background: white;
             box-shadow: 0 4px 20px rgba(0,0,0,0.08);
@@ -134,7 +134,7 @@
         
         /* Content Pages */
         .content-page {
-            padding: 50px 45px;
+            padding: 40px 45px;
         }
         
         /* Section Header */
@@ -309,8 +309,8 @@
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 13px;
-            margin-bottom: 20px;
+            font-size: 12px;
+            margin-bottom: 15px;
         }
         
         .data-table th {
@@ -715,12 +715,12 @@
             </div>
         </div>
 
-        <!-- Page 3: 4D Assessment -->
+        <!-- Page 3: 4D Assessment Overview -->
         <div class="page content-page">
             <div class="section-header">
                 <div class="section-number">02</div>
                 <div>
-                    <div class="section-title">4D多维度评估结果</div>
+                    <div class="section-title">4D多维度评估总览</div>
                     <div class="section-subtitle">4D MULTI-DIMENSIONAL ASSESSMENT</div>
                 </div>
             </div>
@@ -754,8 +754,8 @@
 
             <div class="chart-container">
                 <div class="chart-title">4D维度雷达图分析</div>
-                <div style="height: 280px; display: flex; justify-content: center;">
-                    <canvas id="radarChart" style="max-width: 400px;"></canvas>
+                <div style="height: 240px; display: flex; justify-content: center;">
+                    <canvas id="radarChart" style="max-width: 350px;"></canvas>
                 </div>
             </div>
 
@@ -814,10 +814,297 @@
             </div>
         </div>
 
-        <!-- Page 4: Growth Prediction -->
+        <!-- Page 4: D1 & D2 Details -->
         <div class="page content-page">
             <div class="section-header">
-                <div class="section-number">03</div>
+                <div class="section-number" style="background: linear-gradient(135deg, #6366f1, #8b5cf6);">D1</div>
+                <div>
+                    <div class="section-title">深度睡眠维度分析</div>
+                    <div class="section-subtitle">SLEEP QUALITY ASSESSMENT</div>
+                </div>
+            </div>
+
+            <div class="two-column">
+                <div class="info-card" style="border-left-color: #6366f1;">
+                    <div class="info-card-title" style="color: #6366f1;">
+                        <i class="fas fa-chart-bar"></i>
+                        睡眠评分详情
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">综合得分</span>
+                        <span class="data-value" style="color: #6366f1; font-size: 24px;">85分</span>
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">评估等级</span>
+                        <span class="data-value"><span class="badge-excellent">优秀</span></span>
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">入睡时间</span>
+                        <span class="data-value">21:30</span>
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">睡眠时长</span>
+                        <span class="data-value">9.5小时</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">夜间觉醒</span>
+                        <span class="data-value">0-1次</span>
+                    </div>
+                </div>
+
+                <div class="info-card" style="border-left-color: #10b981;">
+                    <div class="info-card-title" style="color: #10b981;">
+                        <i class="fas fa-thumbs-up"></i>
+                        优势表现
+                    </div>
+                    <ul style="font-size: 13px; color: #475569; line-height: 2; padding-left: 18px;">
+                        <li>入睡时间规律，符合生长激素分泌黄金时段</li>
+                        <li>睡眠环境安静舒适，温度适宜</li>
+                        <li>睡前无电子产品使用习惯</li>
+                        <li>夜间觉醒次数少，睡眠连续性好</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="info-card" style="border-left-color: #f59e0b;">
+                <div class="info-card-title" style="color: #f59e0b;">
+                    <i class="fas fa-lightbulb"></i>
+                    睡眠优化建议
+                </div>
+                <div class="two-column">
+                    <ul style="font-size: 13px; color: #475569; line-height: 2; padding-left: 18px;">
+                        <li>继续保持21:30前入睡的良好习惯</li>
+                        <li>确保睡眠时长在9-11小时范围内</li>
+                        <li>维持当前安静、黑暗的睡眠环境</li>
+                    </ul>
+                    <ul style="font-size: 13px; color: #475569; line-height: 2; padding-left: 18px;">
+                        <li>睡前可进行轻柔拉伸放松身体</li>
+                        <li>避免睡前2小时内剧烈运动</li>
+                        <li>保持固定的睡前仪式感</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-header" style="margin-top: 30px;">
+                <div class="section-number" style="background: linear-gradient(135deg, #f97316, #fb923c);">D2</div>
+                <div>
+                    <div class="section-title">精准营养维度分析</div>
+                    <div class="section-subtitle">NUTRITION ASSESSMENT</div>
+                </div>
+            </div>
+
+            <div class="two-column">
+                <div class="info-card" style="border-left-color: #f97316;">
+                    <div class="info-card-title" style="color: #f97316;">
+                        <i class="fas fa-chart-bar"></i>
+                        营养评分详情
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">综合得分</span>
+                        <span class="data-value" style="color: #f97316; font-size: 24px;">68分</span>
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">评估等级</span>
+                        <span class="data-value"><span class="badge-average">需改善</span></span>
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">三餐规律性</span>
+                        <span class="data-value">一般</span>
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">蛋白质摄入</span>
+                        <span class="data-value">不足</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">钙摄入</span>
+                        <span class="data-value">偏低</span>
+                    </div>
+                </div>
+
+                <div class="info-card" style="border-left-color: #ef4444;">
+                    <div class="info-card-title" style="color: #ef4444;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        主要问题
+                    </div>
+                    <ul style="font-size: 13px; color: #475569; line-height: 2; padding-left: 18px;">
+                        <li>挑食偏食现象较明显，蔬菜摄入不足</li>
+                        <li>早餐时间不固定，有时 skipping</li>
+                        <li>零食摄入较多，影响正餐食欲</li>
+                        <li>优质蛋白质来源单一</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="highlight-box" style="margin-top: 15px;">
+                <strong style="color: #92400e;"><i class="fas fa-utensils"></i> 营养改善重点：</strong>
+                <span style="color: #92400e;">建议制定个性化营养方案，增加优质蛋白摄入，规律三餐时间，控制零食摄入，补充钙和维生素D。</span>
+            </div>
+
+            <div class="page-footer">
+                <span>益康顺儿童健康管理</span>
+                <span>第 4 页 / 共 6 页</span>
+            </div>
+        </div>
+
+        <!-- Page 5: D3 & D4 Details -->
+        <div class="page content-page">
+            <div class="section-header">
+                <div class="section-number" style="background: linear-gradient(135deg, #10b981, #34d399);">D3</div>
+                <div>
+                    <div class="section-title">纵向运动维度分析</div>
+                    <div class="section-subtitle">EXERCISE ASSESSMENT</div>
+                </div>
+            </div>
+
+            <div class="two-column">
+                <div class="info-card" style="border-left-color: #10b981;">
+                    <div class="info-card-title" style="color: #10b981;">
+                        <i class="fas fa-chart-bar"></i>
+                        运动评分详情
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">综合得分</span>
+                        <span class="data-value" style="color: #10b981; font-size: 24px;">72分</span>
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">评估等级</span>
+                        <span class="data-value"><span class="badge-good">良好</span></span>
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">运动频率</span>
+                        <span class="data-value">3-4次/周</span>
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">单次时长</span>
+                        <span class="data-value">30-45分钟</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">运动类型</span>
+                        <span class="data-value">混合运动</span>
+                    </div>
+                </div>
+
+                <div class="info-card" style="border-left-color: #0c9af0;">
+                    <div class="info-card-title" style="color: #0c9af0;">
+                        <i class="fas fa-dumbbell"></i>
+                        推荐运动项目
+                    </div>
+                    <ul style="font-size: 13px; color: #475569; line-height: 2; padding-left: 18px;">
+                        <li><strong>跳绳</strong> - 最有效的纵向运动，建议每天1000-1500个</li>
+                        <li><strong>摸高跳</strong> - 刺激下肢骨骼生长，每天3组</li>
+                        <li><strong>篮球/排球</strong> - 结合跳跃和拉伸，每周2-3次</li>
+                        <li><strong>游泳</strong> - 全身性拉伸运动，每周1-2次</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="info-card" style="border-left-color: #f59e0b;">
+                <div class="info-card-title" style="color: #f59e0b;">
+                    <i class="fas fa-bullseye"></i>
+                    运动优化目标
+                </div>
+                <div class="two-column">
+                    <div>
+                        <p style="font-size: 13px; color: #475569; margin-bottom: 10px;"><strong>当前状态：</strong></p>
+                        <ul style="font-size: 13px; color: #475569; line-height: 2; padding-left: 18px;">
+                            <li>运动频率：3-4次/周</li>
+                            <li>纵向运动占比：约40%</li>
+                            <li>户外运动时间：偏少</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p style="font-size: 13px; color: #475569; margin-bottom: 10px;"><strong>目标状态：</strong></p>
+                        <ul style="font-size: 13px; color: #475569; line-height: 2; padding-left: 18px;">
+                            <li>运动频率：5-7次/周</li>
+                            <li>纵向运动占比：提升至60%</li>
+                            <li>增加户外阳光 exposure</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-header" style="margin-top: 30px;">
+                <div class="section-number" style="background: linear-gradient(135deg, #f43f5e, #fb7185);">D4</div>
+                <div>
+                    <div class="section-title">情绪与习惯维度分析</div>
+                    <div class="section-subtitle">EMOTION & HABITS ASSESSMENT</div>
+                </div>
+            </div>
+
+            <div class="two-column">
+                <div class="info-card" style="border-left-color: #f43f5e;">
+                    <div class="info-card-title" style="color: #f43f5e;">
+                        <i class="fas fa-chart-bar"></i>
+                        情绪评分详情
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">综合得分</span>
+                        <span class="data-value" style="color: #f43f5e; font-size: 24px;">78分</span>
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">评估等级</span>
+                        <span class="data-value"><span class="badge-good">良好</span></span>
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">家庭氛围</span>
+                        <span class="data-value">和谐</span>
+                    </div>
+                    <div class="data-item" style="margin-bottom: 12px;">
+                        <span class="data-label">焦虑水平</span>
+                        <span class="data-value">偶有</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">情绪稳定性</span>
+                        <span class="data-value">较好</span>
+                    </div>
+                </div>
+
+                <div class="info-card" style="border-left-color: #10b981;">
+                    <div class="info-card-title" style="color: #10b981;">
+                        <i class="fas fa-heart"></i>
+                        积极表现
+                    </div>
+                    <ul style="font-size: 13px; color: #475569; line-height: 2; padding-left: 18px;">
+                        <li>家庭关系融洽，父母陪伴充足</li>
+                        <li>整体情绪稳定，性格开朗</li>
+                        <li>能与同伴良好相处</li>
+                        <li>有表达情绪的安全渠道</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="info-card" style="border-left-color: #f59e0b;">
+                <div class="info-card-title" style="color: #f59e0b;">
+                    <i class="fas fa-comments"></i>
+                    情绪管理建议
+                </div>
+                <p style="font-size: 14px; color: #475569; line-height: 1.8; margin-bottom: 15px;">
+                    <strong>评估结论：</strong>情绪整体稳定，家庭氛围和谐，偶有焦虑情绪。建议家长关注孩子的学习压力，避免过高期望，营造轻松愉快的家庭氛围。
+                </p>
+                <div class="two-column">
+                    <ul style="font-size: 13px; color: #475569; line-height: 2; padding-left: 18px;">
+                        <li>保持开放的亲子沟通渠道</li>
+                        <li>关注孩子的学业压力来源</li>
+                        <li>合理安排课外活动时间</li>
+                    </ul>
+                    <ul style="font-size: 13px; color: #475569; line-height: 2; padding-left: 18px;">
+                        <li>鼓励孩子表达内心感受</li>
+                        <li>避免过度比较和施压</li>
+                        <li>培养积极的应对方式</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="page-footer">
+                <span>益康顺儿童健康管理</span>
+                <span>第 5 页 / 共 6 页</span>
+            </div>
+        </div>
+
+        <!-- Page 6: Growth Prediction -->
+        <div class="page content-page">
+            <div class="section-header">
+                <div class="section-number">06</div>
                 <div>
                     <div class="section-title">生长潜力预测</div>
                     <div class="section-subtitle">GROWTH POTENTIAL PREDICTION</div>
@@ -909,14 +1196,14 @@
 
             <div class="page-footer">
                 <span>益康顺儿童健康管理</span>
-                <span>第 4 页 / 共 6 页</span>
+                <span>第 6 页 / 共 9 页</span>
             </div>
         </div>
 
-        <!-- Page 5: Intervention Plan -->
+        <!-- Page 7: Intervention Plan -->
         <div class="page content-page">
             <div class="section-header">
-                <div class="section-number">04</div>
+                <div class="section-number">07</div>
                 <div>
                     <div class="section-title">个性化干预方案</div>
                     <div class="section-subtitle">PERSONALIZED INTERVENTION PLAN</div>
@@ -966,7 +1253,7 @@
             </table>
 
             <div class="section-header" style="margin-top: 30px;">
-                <div class="section-number" style="background: linear-gradient(135deg, #f59e0b, #f97316);">05</div>
+                <div class="section-number" style="background: linear-gradient(135deg, #f59e0b, #f97316);">08</div>
                 <div>
                     <div class="section-title">随访计划</div>
                     <div class="section-subtitle">FOLLOW-UP PLAN</div>
@@ -1026,14 +1313,14 @@
 
             <div class="page-footer">
                 <span>益康顺儿童健康管理</span>
-                <span>第 5 页 / 共 6 页</span>
+                <span>第 7 页 / 共 9 页</span>
             </div>
         </div>
 
-        <!-- Page 6: Conclusion -->
+        <!-- Page 8: Conclusion -->
         <div class="page content-page">
             <div class="section-header">
-                <div class="section-number">06</div>
+                <div class="section-number">08</div>
                 <div>
                     <div class="section-title">报告结论</div>
                     <div class="section-subtitle">REPORT CONCLUSION</div>
@@ -1131,7 +1418,112 @@
 
             <div class="page-footer">
                 <span>益康顺儿童健康管理</span>
-                <span>第 6 页 / 共 6 页</span>
+                <span>第 8 页 / 共 9 页</span>
+            </div>
+        </div>
+
+        <!-- Page 9: Report Summary -->
+        <div class="page content-page">
+            <div class="section-header">
+                <div class="section-number">09</div>
+                <div>
+                    <div class="section-title">报告总结与行动建议</div>
+                    <div class="section-subtitle">SUMMARY & ACTION PLAN</div>
+                </div>
+            </div>
+
+            <div class="summary-box">
+                <div class="summary-title">
+                    <i class="fas fa-clipboard-check"></i>
+                    综合评估结论
+                </div>
+                <table class="data-table" style="margin-bottom: 0;">
+                    <tbody>
+                        <tr>
+                            <td style="width: 25%; background: transparent; border: none;"><strong>当前生长状态</strong></td>
+                            <td style="background: transparent; border: none;">身高体重均在正常范围内，年增长率正常</td>
+                        </tr>
+                        <tr>
+                            <td style="background: transparent; border: none;"><strong>4D维度分析</strong></td>
+                            <td style="background: transparent; border: none;">优势：深度睡眠(85分) | 短板：精准营养(68分)</td>
+                        </tr>
+                        <tr>
+                            <td style="background: transparent; border: none;"><strong>生长潜力</strong></td>
+                            <td style="background: transparent; border: none;">通过4D干预预计可突破遗传身高4-6cm</td>
+                        </tr>
+                        <tr>
+                            <td style="background: transparent; border: none;"><strong>风险等级</strong></td>
+                            <td style="background: transparent; border: none;"><span class="risk-low"><span class="risk-dot"></span>低风险</span></td>
+                        </tr>
+                        <tr>
+                            <td style="background: transparent; border: none;"><strong>干预紧迫性</strong></td>
+                            <td style="background: transparent; border: none;"><span class="badge-good" style="font-size: 12px; padding: 4px 12px;">积极干预</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="info-card" style="border-left-color: #0c9af0;">
+                <div class="info-card-title" style="color: #0c9af0;">
+                    <i class="fas fa-tasks"></i>
+                    家长行动清单
+                </div>
+                <ul class="action-list">
+                    <li class="action-item">
+                        <span class="action-number">1</span>
+                        <span class="action-text">确认干预方案并签署服务协议</span>
+                    </li>
+                    <li class="action-item">
+                        <span class="action-number">2</span>
+                        <span class="action-text">建立1v1专属服务群，对接健康师</span>
+                    </li>
+                    <li class="action-item">
+                        <span class="action-number">3</span>
+                        <span class="action-text">开始每日打卡（睡眠、饮食、运动）</span>
+                    </li>
+                    <li class="action-item">
+                        <span class="action-number">4</span>
+                        <span class="action-text">参加第1次月度复盘会议</span>
+                    </li>
+                    <li class="action-item" style="border-bottom: none;">
+                        <span class="action-number">5</span>
+                        <span class="action-text">3个月后复查Y-CAS评估</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="info-card" style="background: linear-gradient(135deg, #f0f7ff, #f0fdf4); border-left-color: #10b981;">
+                <div class="info-card-title" style="color: #10b981;">
+                    <i class="fas fa-comment-dots"></i>
+                    健康师寄语
+                </div>
+                <p style="font-size: 14px; line-height: 1.8; color: #475569; font-style: italic;">
+                    "小萌目前的生长发育状况整体良好，睡眠维度表现优秀是值得继续保持的优势。建议家长重点关注营养维度，通过科学的营养搭配和饮食习惯培养，配合规律的运动和良好的情绪管理，相信小萌一定能够突破遗传身高，实现理想的成年身高目标。我们将全程陪伴，为孩子的健康成长保驾护航！"
+                </p>
+                <div style="text-align: right; margin-top: 15px;">
+                    <span style="font-size: 13px; color: #64748b;">专属健康师：李医生</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; padding: 20px; background: #f8fafc; border-radius: 12px; text-align: center;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 10px;">
+                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #0c9af0, #14b8a6); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: 700;">益</div>
+                    <div style="text-align: left;">
+                        <div style="font-weight: 700; color: #0f172a;">益康顺儿童健康管理</div>
+                        <div style="font-size: 12px; color: #64748b;">专注家庭场景的"儿童健康"管理</div>
+                    </div>
+                </div>
+                <p style="font-size: 12px; color: #94a3b8; margin-bottom: 5px;">医育结合 · 4D科学 · 5S品质</p>
+                <p style="font-size: 11px; color: #cbd5e1;">本报告基于Y-CAS™多维度动态评估系统生成 | 系统版本：v4.0</p>
+            </div>
+
+            <div style="margin-top: 15px; padding: 12px; background: #fef2f2; border-radius: 8px; font-size: 11px; color: #991b1b; text-align: center;">
+                <strong>免责声明：</strong>本评估报告仅供参考，不能替代医生的专业诊断和治疗建议。如发现孩子生长发育异常，请及时就医。
+            </div>
+
+            <div class="page-footer">
+                <span>益康顺儿童健康管理</span>
+                <span>第 9 页 / 共 9 页</span>
             </div>
         </div>
     </div>

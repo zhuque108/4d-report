@@ -98,6 +98,205 @@ const USER_CONFIG = {
     }
   },
 
+  // 4D评估指标配置
+  assessmentConfig: {
+    d1: {
+      name: '深度睡眠',
+      weight: 25,
+      items: [
+        {
+          id: 'sleepDifficulty',
+          name: '入睡困难',
+          options: [
+            { value: 'none', label: '无', score: 25 },
+            { value: 'occasional', label: '偶尔', score: 15 },
+            { value: 'often', label: '经常', score: 5 }
+          ]
+        },
+        {
+          id: 'nightWaking',
+          name: '夜间觉醒',
+          options: [
+            { value: '0', label: '0次', score: 25 },
+            { value: '1-2', label: '1-2次', score: 15 },
+            { value: '3+', label: '3次以上', score: 5 }
+          ]
+        },
+        {
+          id: 'earlyWaking',
+          name: '早醒情况',
+          options: [
+            { value: 'none', label: '无', score: 25 },
+            { value: 'occasional', label: '偶尔', score: 15 },
+            { value: 'often', label: '经常', score: 5 }
+          ]
+        },
+        {
+          id: 'dayEnergy',
+          name: '日间精神',
+          options: [
+            { value: 'energetic', label: '充沛', score: 25 },
+            { value: 'normal', label: '一般', score: 15 },
+            { value: 'tired', label: '疲倦', score: 5 }
+          ]
+        }
+      ]
+    },
+    d2: {
+      name: '精准营养',
+      weight: 25,
+      items: [
+        {
+          id: 'pickyEating',
+          name: '挑食偏食',
+          options: [
+            { value: 'none', label: '无', score: 25 },
+            { value: 'mild', label: '轻度', score: 20 },
+            { value: 'moderate', label: '中度', score: 10 },
+            { value: 'severe', label: '重度', score: 5 }
+          ]
+        },
+        {
+          id: 'mealRegularity',
+          name: '进餐时间',
+          options: [
+            { value: 'regular', label: '规律', score: 25 },
+            { value: 'irregular', label: '不规律', score: 10 }
+          ]
+        },
+        {
+          id: 'snackIntake',
+          name: '零食饮料',
+          options: [
+            { value: 'rarely', label: '很少', score: 25 },
+            { value: 'sometimes', label: '偶尔', score: 20 },
+            { value: 'often', label: '经常', score: 10 }
+          ]
+        },
+        {
+          id: 'breakfastHabit',
+          name: '早餐习惯',
+          options: [
+            { value: 'daily', label: '每天吃', score: 25 },
+            { value: 'occasional', label: '偶尔不吃', score: 15 },
+            { value: 'rarely', label: '经常不吃', score: 5 }
+          ]
+        }
+      ]
+    },
+    d3: {
+      name: '纵向运动',
+      weight: 25,
+      items: [
+        {
+          id: 'exerciseFrequency',
+          name: '运动频率',
+          options: [
+            { value: '<=2', label: '<=2次/周', score: 10 },
+            { value: '3-4', label: '3-4次/周', score: 20 },
+            { value: '>=5', label: '>=5次/周', score: 25 }
+          ]
+        },
+        {
+          id: 'verticalSportRatio',
+          name: '纵向运动占比',
+          options: [
+            { value: '<40', label: '<40%', score: 10 },
+            { value: '40-60', label: '40-60%', score: 15 },
+            { value: '>=60', label: '>=60%', score: 25 }
+          ]
+        },
+        {
+          id: 'duration',
+          name: '单次运动时长',
+          options: [
+            { value: '<30', label: '<30分钟', score: 10 },
+            { value: '30-45', label: '30-45分钟', score: 15 },
+            { value: '>=45', label: '>=45分钟', score: 25 }
+          ]
+        },
+        {
+          id: 'intensity',
+          name: '运动强度',
+          options: [
+            { value: 'light', label: '轻度', score: 15 },
+            { value: 'moderate', label: '中等', score: 25 },
+            { value: 'vigorous', label: '剧烈', score: 20 }
+          ]
+        }
+      ]
+    },
+    d4: {
+      name: '情绪与习惯',
+      weight: 25,
+      items: [
+        {
+          id: 'anxiety',
+          name: '焦虑情绪',
+          options: [
+            { value: 'none', label: '无', score: 25 },
+            { value: 'occasional', label: '偶尔', score: 20 },
+            { value: 'frequent', label: '经常', score: 10 }
+          ]
+        },
+        {
+          id: 'sleepQuality',
+          name: '睡眠质量',
+          options: [
+            { value: 'good', label: '好', score: 25 },
+            { value: 'fair', label: '一般', score: 15 },
+            { value: 'poor', label: '差', score: 10 }
+          ]
+        },
+        {
+          id: 'appetiteChange',
+          name: '食欲变化',
+          options: [
+            { value: 'none', label: '无变化', score: 25 },
+            { value: 'decreased', label: '减少', score: 15 },
+            { value: 'increased', label: '增加', score: 15 }
+          ]
+        },
+        {
+          id: 'socialWillingness',
+          name: '社交意愿',
+          options: [
+            { value: 'high', label: '高', score: 25 },
+            { value: 'medium', label: '中', score: 15 },
+            { value: 'low', label: '低', score: 10 }
+          ]
+        },
+        {
+          id: 'familyAtmosphere',
+          name: '家庭氛围',
+          options: [
+            { value: 'harmonious', label: '和谐', score: 25 },
+            { value: 'tense', label: '紧张', score: 10 },
+            { value: 'conflict', label: '冲突', score: 5 }
+          ]
+        },
+        {
+          id: 'parentExpectation',
+          name: '父母期望',
+          options: [
+            { value: 'reasonable', label: '合理', score: 25 },
+            { value: 'high', label: '较高', score: 15 },
+            { value: 'excessive', label: '过高', score: 5 }
+          ]
+        },
+        {
+          id: 'academicPressure',
+          name: '学业压力',
+          options: [
+            { value: 'low', label: '低', score: 25 },
+            { value: 'medium', label: '中', score: 15 },
+            { value: 'high', label: '高', score: 10 }
+          ]
+        }
+      ]
+    }
+  },
+
   // 风险评估
   risks: {
     growthDelay: {

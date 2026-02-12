@@ -123,11 +123,32 @@ const ExcelHandler = {
       '体重(kg)': 'weight',
       '父亲身高': 'fatherHeight',
       '母亲身高': 'motherHeight',
-      'D1睡眠评分': 'd1Score',
-      'D2营养评分': 'd2Score',
-      'D3运动评分': 'd3Score',
-      'D4情绪评分': 'd4Score',
-      '评估日期': 'reportDate'
+      '评估日期': 'reportDate',
+      // D1 深度睡眠
+      'D1-入睡困难': 'd1_sleepDifficulty',
+      'D1-夜间觉醒': 'd1_nightWaking',
+      'D1-早醒情况': 'd1_earlyWaking',
+      'D1-日间精神': 'd1_dayEnergy',
+      // D2 精准营养
+      'D2-挑食偏食': 'd2_pickyEating',
+      'D2-进餐时间': 'd2_mealRegularity',
+      'D2-零食饮料': 'd2_snackIntake',
+      'D2-早餐习惯': 'd2_breakfastHabit',
+      'D2-牛奶摄入(ml)': 'd2_milkIntake',
+      // D3 纵向运动
+      'D3-运动频率': 'd3_exerciseFrequency',
+      'D3-纵向运动占比': 'd3_verticalSportRatio',
+      'D3-单次运动时长': 'd3_duration',
+      'D3-运动强度': 'd3_intensity',
+      'D3-主要运动项目': 'd3_mainSports',
+      // D4 情绪与习惯
+      'D4-焦虑情绪': 'd4_anxiety',
+      'D4-睡眠质量': 'd4_sleepQuality',
+      'D4-食欲变化': 'd4_appetiteChange',
+      'D4-社交意愿': 'd4_socialWillingness',
+      'D4-家庭氛围': 'd4_familyAtmosphere',
+      'D4-父母期望': 'd4_parentExpectation',
+      'D4-学业压力': 'd4_academicPressure'
     };
 
     var self = this;
@@ -176,6 +197,10 @@ const ExcelHandler = {
       birthVal = YCASUtils.formatDate(bd);
     }
 
+    // 处理4D维度原始数据
+    var details4D = this.process4DDetails(item);
+    var scores4D = this.calculateScores4D(details4D);
+
     return {
       report: {
         id: item.reportId || YCASUtils.generateReportId(item._index),
@@ -207,13 +232,8 @@ const ExcelHandler = {
         targetHeightRange: [0, 0]
       },
       boneAge: { hasXRay: false, age: '', ageDiff: 0, status: '', closureEstimate: '' },
-      scores4D: {
-        d1_sleep: YCASUtils.safeParseInt(item.d1Score),
-        d2_nutrition: YCASUtils.safeParseInt(item.d2Score),
-        d3_sport: YCASUtils.safeParseInt(item.d3Score),
-        d4_mood: YCASUtils.safeParseInt(item.d4Score)
-      },
-      details4D: USER_CONFIG.details4D || {},
+      scores4D: scores4D,
+      details4D: details4D,
       risks: USER_CONFIG.risks || {},
       predictions: {},
       interventions: USER_CONFIG.interventions || {},
@@ -221,6 +241,350 @@ const ExcelHandler = {
       advisor: USER_CONFIG.advisor || {},
       institution: USER_CONFIG.institution || {}
     };
+  },
+
+  process4DDetails(item) {
+    // 映射Excel输入值到系统内部值
+    var mapping = {
+      // D1 映射
+      d1_sleepDifficulty: {
+        '无': 'none',
+        '偶尔': 'occasional',
+        '经常': 'often'
+      },
+      d1_nightWaking: {
+        '0次': '0',
+        '1-2次': '1-2',
+        '3次以上': '3+'
+      },
+      d1_earlyWaking: {
+        '无': 'none',
+        '偶尔': 'occasional',
+        '经常': 'often'
+      },
+      d1_dayEnergy: {
+        '充沛': 'energetic',
+        '一般': 'normal',
+        '疲倦': 'tired'
+      },
+      // D2 映射
+      d2_pickyEating: {
+        '无': 'none',
+        '轻度': 'mild',
+        '中度': 'moderate',
+        '重度': 'severe'
+      },
+      d2_mealRegularity: {
+        '规律': 'regular',
+        '不规律': 'irregular'
+      },
+      d2_snackIntake: {
+        '很少': 'rarely',
+        '偶尔': 'sometimes',
+        '经常': 'often'
+      },
+      d2_breakfastHabit: {
+        '每天吃': 'daily',
+        '偶尔不吃': 'occasional',
+        '经常不吃': 'rarely'
+      },
+      // D3 映射
+      d3_exerciseFrequency: {
+        '<=2次/周': '<=2',
+        '3-4次/周': '3-4',
+        '>=5次/周': '>=5'
+      },
+      d3_verticalSportRatio: {
+        '<40%': '<40',
+        '40-60%': '40-60',
+        '>=60%': '>=60'
+      },
+      d3_duration: {
+        '<30分钟': '<30',
+        '30-45分钟': '30-45',
+        '>=45分钟': '>=45'
+      },
+      d3_intensity: {
+        '轻度': 'light',
+        '中等': 'moderate',
+        '剧烈': 'vigorous'
+      },
+      // D4 映射
+      d4_anxiety: {
+        '无': 'none',
+        '偶尔': 'occasional',
+        '经常': 'frequent'
+      },
+      d4_sleepQuality: {
+        '好': 'good',
+        '一般': 'fair',
+        '差': 'poor'
+      },
+      d4_appetiteChange: {
+        '无变化': 'none',
+        '减少': 'decreased',
+        '增加': 'increased'
+      },
+      d4_socialWillingness: {
+        '高': 'high',
+        '中': 'medium',
+        '低': 'low'
+      },
+      d4_familyAtmosphere: {
+        '和谐': 'harmonious',
+        '紧张': 'tense',
+        '冲突': 'conflict'
+      },
+      d4_parentExpectation: {
+        '合理': 'reasonable',
+        '较高': 'high',
+        '过高': 'excessive'
+      },
+      d4_academicPressure: {
+        '低': 'low',
+        '中': 'medium',
+        '高': 'high'
+      }
+    };
+
+    // 处理D1
+    var d1 = {
+      sleepTime: '21:30',
+      wakeTime: '07:00',
+      sleepDuration: 9.5,
+      sleepDifficulty: mapping.d1_sleepDifficulty[item.d1_sleepDifficulty] || 'none',
+      nightWaking: mapping.d1_nightWaking[item.d1_nightWaking] || '0',
+      earlyWaking: mapping.d1_earlyWaking[item.d1_earlyWaking] || 'none',
+      dayEnergy: mapping.d1_dayEnergy[item.d1_dayEnergy] || 'energetic',
+      summary: ''
+    };
+
+    // 处理D2
+    var d2 = {
+      pickyEating: mapping.d2_pickyEating[item.d2_pickyEating] || 'moderate',
+      mealRegularity: mapping.d2_mealRegularity[item.d2_mealRegularity] || 'irregular',
+      snackIntake: mapping.d2_snackIntake[item.d2_snackIntake] || 'often',
+      breakfastHabit: mapping.d2_breakfastHabit[item.d2_breakfastHabit] || 'occasional',
+      milkIntake: YCASUtils.safeParseInt(item.d2_milkIntake) || 500,
+      calciumSupplement: false,
+      summary: ''
+    };
+
+    // 处理D3
+    var d3 = {
+      exerciseFrequency: mapping.d3_exerciseFrequency[item.d3_exerciseFrequency] || '3-4',
+      verticalSportRatio: mapping.d3_verticalSportRatio[item.d3_verticalSportRatio] || '<40',
+      duration: mapping.d3_duration[item.d3_duration] || '<30',
+      intensity: mapping.d3_intensity[item.d3_intensity] || 'moderate',
+      mainSports: (item.d3_mainSports || '跳绳, 跑步').split(',').map(s => s.trim()),
+      summary: ''
+    };
+
+    // 处理D4
+    var d4 = {
+      anxiety: mapping.d4_anxiety[item.d4_anxiety] || 'occasional',
+      sleepQuality: mapping.d4_sleepQuality[item.d4_sleepQuality] || 'good',
+      appetiteChange: mapping.d4_appetiteChange[item.d4_appetiteChange] || 'none',
+      socialWillingness: mapping.d4_socialWillingness[item.d4_socialWillingness] || 'high',
+      familyAtmosphere: mapping.d4_familyAtmosphere[item.d4_familyAtmosphere] || 'harmonious',
+      parentExpectation: mapping.d4_parentExpectation[item.d4_parentExpectation] || 'reasonable',
+      academicPressure: mapping.d4_academicPressure[item.d4_academicPressure] || 'low',
+      summary: ''
+    };
+
+    // 生成总结
+    this.generateSummaries({ d1, d2, d3, d4 }, this.calculateScores4D({ d1, d2, d3, d4 }));
+
+    return { d1, d2, d3, d4 };
+  },
+
+  calculateScores4D(details4D) {
+    // 评分配置
+    const scoreConfig = {
+      d1: {
+        sleepDifficulty: {
+          'none': 25,
+          'occasional': 15,
+          'often': 5
+        },
+        nightWaking: {
+          '0': 25,
+          '1-2': 15,
+          '3+': 5
+        },
+        earlyWaking: {
+          'none': 25,
+          'occasional': 15,
+          'often': 5
+        },
+        dayEnergy: {
+          'energetic': 25,
+          'normal': 15,
+          'tired': 5
+        }
+      },
+      d2: {
+        pickyEating: {
+          'none': 25,
+          'mild': 20,
+          'moderate': 10,
+          'severe': 5
+        },
+        mealRegularity: {
+          'regular': 25,
+          'irregular': 10
+        },
+        snackIntake: {
+          'rarely': 25,
+          'sometimes': 20,
+          'often': 10
+        },
+        breakfastHabit: {
+          'daily': 25,
+          'occasional': 15,
+          'rarely': 5
+        }
+      },
+      d3: {
+        exerciseFrequency: {
+          '<=2': 10,
+          '3-4': 20,
+          '>=5': 25
+        },
+        verticalSportRatio: {
+          '<40': 10,
+          '40-60': 15,
+          '>=60': 25
+        },
+        duration: {
+          '<30': 10,
+          '30-45': 15,
+          '>=45': 25
+        },
+        intensity: {
+          'light': 15,
+          'moderate': 25,
+          'vigorous': 20
+        }
+      },
+      d4: {
+        anxiety: {
+          'none': 25,
+          'occasional': 20,
+          'frequent': 10
+        },
+        sleepQuality: {
+          'good': 25,
+          'fair': 15,
+          'poor': 10
+        },
+        appetiteChange: {
+          'none': 25,
+          'decreased': 15,
+          'increased': 15
+        },
+        socialWillingness: {
+          'high': 25,
+          'medium': 15,
+          'low': 10
+        },
+        familyAtmosphere: {
+          'harmonious': 25,
+          'tense': 10,
+          'conflict': 5
+        },
+        parentExpectation: {
+          'reasonable': 25,
+          'high': 15,
+          'excessive': 5
+        },
+        academicPressure: {
+          'low': 25,
+          'medium': 15,
+          'high': 10
+        }
+      }
+    };
+
+    // 计算D1评分
+    const d1Score = Math.round((
+      scoreConfig.d1.sleepDifficulty[details4D.d1.sleepDifficulty] +
+      scoreConfig.d1.nightWaking[details4D.d1.nightWaking] +
+      scoreConfig.d1.earlyWaking[details4D.d1.earlyWaking] +
+      scoreConfig.d1.dayEnergy[details4D.d1.dayEnergy]
+    ) / 4);
+
+    // 计算D2评分
+    const d2Score = Math.round((
+      scoreConfig.d2.pickyEating[details4D.d2.pickyEating] +
+      scoreConfig.d2.mealRegularity[details4D.d2.mealRegularity] +
+      scoreConfig.d2.snackIntake[details4D.d2.snackIntake] +
+      scoreConfig.d2.breakfastHabit[details4D.d2.breakfastHabit]
+    ) / 4);
+
+    // 计算D3评分
+    const d3Score = Math.round((
+      scoreConfig.d3.exerciseFrequency[details4D.d3.exerciseFrequency] +
+      scoreConfig.d3.verticalSportRatio[details4D.d3.verticalSportRatio] +
+      scoreConfig.d3.duration[details4D.d3.duration] +
+      scoreConfig.d3.intensity[details4D.d3.intensity]
+    ) / 4);
+
+    // 计算D4评分
+    const d4Score = Math.round((
+      scoreConfig.d4.anxiety[details4D.d4.anxiety] +
+      scoreConfig.d4.sleepQuality[details4D.d4.sleepQuality] +
+      scoreConfig.d4.appetiteChange[details4D.d4.appetiteChange] +
+      scoreConfig.d4.socialWillingness[details4D.d4.socialWillingness] +
+      scoreConfig.d4.familyAtmosphere[details4D.d4.familyAtmosphere] +
+      scoreConfig.d4.parentExpectation[details4D.d4.parentExpectation] +
+      scoreConfig.d4.academicPressure[details4D.d4.academicPressure]
+    ) / 7);
+
+    return {
+      d1_sleep: d1Score,
+      d2_nutrition: d2Score,
+      d3_sport: d3Score,
+      d4_mood: d4Score
+    };
+  },
+
+  generateSummaries(details4D, scores4D) {
+    // D1 总结
+    if (scores4D.d1_sleep >= 80) {
+      details4D.d1.summary = '睡眠质量良好，入睡快，夜间无觉醒';
+    } else if (scores4D.d1_sleep >= 60) {
+      details4D.d1.summary = '睡眠质量一般，存在入睡困难或夜间觉醒情况';
+    } else {
+      details4D.d1.summary = '睡眠质量较差，需要改善睡眠环境和作息习惯';
+    }
+
+    // D2 总结
+    if (scores4D.d2_nutrition >= 80) {
+      details4D.d2.summary = '饮食规律，营养均衡，无挑食偏食现象';
+    } else if (scores4D.d2_nutrition >= 60) {
+      details4D.d2.summary = '挑食偏食较严重，早餐不规律，零食摄入偏多';
+    } else {
+      details4D.d2.summary = '饮食结构不合理，营养摄入严重不足，需要专业指导';
+    }
+
+    // D3 总结
+    if (scores4D.d3_sport >= 80) {
+      details4D.d3.summary = '运动频率充足，纵向运动占比高，时长和强度适宜';
+    } else if (scores4D.d3_sport >= 60) {
+      details4D.d3.summary = '运动频率尚可，但纵向运动占比偏低，时长不足';
+    } else {
+      details4D.d3.summary = '运动量严重不足，需要增加运动频率和纵向运动比例';
+    }
+
+    // D4 总结
+    if (scores4D.d4_mood >= 80) {
+      details4D.d4.summary = '情绪稳定，家庭氛围和谐，社交意愿高';
+    } else if (scores4D.d4_mood >= 60) {
+      details4D.d4.summary = '情绪整体稳定，家庭氛围和谐，偶有焦虑情绪';
+    } else {
+      details4D.d4.summary = '情绪波动较大，家庭氛围紧张，需要心理疏导';
+    }
   },
 
   renderPreview() {
@@ -392,11 +756,27 @@ function downloadTemplate() {
 
   var template = [
     ['评估编号', '儿童姓名', '性别', '出生日期', '身高(cm)', '体重(kg)',
-     '父亲身高', '母亲身高', 'D1睡眠评分', 'D2营养评分', 'D3运动评分', 'D4情绪评分', '评估日期'],
+     '父亲身高', '母亲身高', '评估日期',
+     // D1 深度睡眠
+     'D1-入睡困难', 'D1-夜间觉醒', 'D1-早醒情况', 'D1-日间精神',
+     // D2 精准营养
+     'D2-挑食偏食', 'D2-进餐时间', 'D2-零食饮料', 'D2-早餐习惯', 'D2-牛奶摄入(ml)',
+     // D3 纵向运动
+     'D3-运动频率', 'D3-纵向运动占比', 'D3-单次运动时长', 'D3-运动强度', 'D3-主要运动项目',
+     // D4 情绪与习惯
+     'D4-焦虑情绪', 'D4-睡眠质量', 'D4-食欲变化', 'D4-社交意愿', 'D4-家庭氛围', 'D4-父母期望', 'D4-学业压力'],
     ['YCAS-2025-001', '张小萌', '女', '2016-03-15', 128.5, 26.8,
-     175, 162, 85, 68, 72, 78, '2025-02-11'],
+     175, 162, '2025-02-11',
+     '无', '0次', '无', '充沛',
+     '中度', '不规律', '经常', '偶尔不吃', 500,
+     '3-4次/周', '40-60%', '30-45分钟', '中等', '跳绳, 跑步',
+     '偶尔', '好', '无变化', '高', '和谐', '合理', '低'],
     ['YCAS-2025-002', '王小明', '男', '2015-08-20', 135.0, 30.2,
-     178, 165, 75, 80, 85, 70, '2025-02-11']
+     178, 165, '2025-02-11',
+     '偶尔', '1-2次', '偶尔', '一般',
+     '轻度', '规律', '偶尔', '每天吃', 600,
+     '>=5次/周', '>=60%', '>=45分钟', '剧烈', '篮球, 摸高',
+     '无', '好', '无变化', '高', '和谐', '合理', '中']
   ];
 
   var ws = XLSX.utils.aoa_to_sheet(template);
@@ -405,8 +785,15 @@ function downloadTemplate() {
 
   ws['!cols'] = [
     { wch: 16 }, { wch: 10 }, { wch: 6 }, { wch: 12 },
+    { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 12 },
+    // D1
     { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
-    { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 }
+    // D2
+    { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 12 },
+    // D3
+    { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 10 }, { wch: 15 },
+    // D4
+    { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }
   ];
 
   XLSX.writeFile(wb, 'Y-CAS数据导入模板.xlsx');

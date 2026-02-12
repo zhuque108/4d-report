@@ -182,9 +182,9 @@ ycas-report-lite/
 ### 3.1 数据输入模块
 
 轻量版支持 **三种数据输入方式**：
-1. **单用户表单录入** - 在线填写表单
-2. **批量Excel导入** - 上传Excel文件
-3. **配置文件编辑** - 直接修改JS文件（保留）
+1. **单用户表单录入** - 在线填写表单，支持4D维度原始数据录入
+2. **批量Excel导入** - 上传Excel文件，支持批量导入4D维度原始数据
+3. **配置文件编辑** - 直接修改JS文件（保留，用于高级用户）
 
 ---
 
@@ -210,17 +210,44 @@ ycas-report-lite/
 │  │ 父亲身高 *  │ │ 母亲身高 *  │                       │
 │  └─────────────┘ └─────────────┘                       │
 │                                                         │
-│  📊 4D维度评分（0-100分）                                │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐       │
-│  │ D1 深度睡眠 │ │ D2 精准营养 │ │ D3 纵向运动 │       │
-│  │    [85]     │ │    [68]     │ │    [72]     │       │
-│  └─────────────┘ └─────────────┘ └─────────────┘       │
-│  ┌─────────────┐                                        │
-│  │ D4 情绪习惯 │                                        │
-│  │    [78]     │                                        │
-│  └─────────────┘                                        │
+│  📊 4D维度详细评估                                       │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │ 🛌 D1 深度睡眠                                  │   │
+│  ├─────────────┬─────────────┬─────────────┬────────┘   │
+│  │ 入睡困难：  │ 夜间觉醒：  │ 早醒情况：  │ 日间精神： │
+│  │ ●无 ○偶尔 ○经常 │ ●0次 ○1-2次 ○3+次 │ ●无 ○偶尔 ○经常 │ ●充沛 ○一般 ○疲倦 │
+│  │ 入睡时间：  │ 起床时间：  │ 睡眠时长：  │          │
+│  │ [21:30]     │ [07:00]     │ [9.5]小时    │          │
+│  └─────────────┴─────────────┴─────────────┴───────────┘ │
 │                                                         │
-│  [预览报告] [导出PDF]                                   │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │ 🥗 D2 精准营养                                  │   │
+│  ├─────────────┬─────────────┬─────────────┬────────┘   │
+│  │ 挑食偏食：  │ 进餐时间：  │ 零食饮料：  │ 早餐习惯： │
+│  │ ●无 ○轻度 ○中度 ○重度 │ ●规律 ○不规律 │ ●很少 ○偶尔 ○经常 │ ●每天吃 ○偶尔不吃 ○经常不吃 │
+│  │ 牛奶摄入：  │ 补钙补充：  │            │          │
+│  │ [500]ml     │ ●是 ○否     │            │          │
+│  └─────────────┴─────────────┴─────────────┴───────────┘ │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │ 🏃 D3 纵向运动                                  │   │
+│  ├─────────────┬─────────────┬─────────────┬────────┘   │
+│  │ 运动频率：  │ 纵向运动占比： │ 单次运动时长： │ 运动强度： │
+│  │ ●<=2次 ○3-4次 ○>=5次 │ ●<40% ○40-60% ○>=60% │ ●<30分钟 ○30-45分钟 ○>=45分钟 │ ●轻度 ○中等 ○剧烈 │
+│  │ 主要运动项目：                                    │   │
+│  │ [跳绳, 跑步]                                       │   │
+│  └─────────────┴─────────────┴─────────────┴───────────┘ │
+│                                                         │
+│  ┌─────────────────────────────────────────────────┐   │
+│  │ 😊 D4 情绪与习惯                                 │   │
+│  ├─────────────┬─────────────┬─────────────┬────────┘   │
+│  │ 焦虑情绪：  │ 睡眠质量：  │ 食欲变化：  │ 社交意愿： │
+│  │ ●无 ○偶尔 ○经常 │ ●好 ○一般 ○差 │ ●无变化 ○减少 ○增加 │ ●高 ○中 ○低 │
+│  │ 家庭氛围：  │ 父母期望：  │ 学业压力：  │          │
+│  │ ●和谐 ○紧张 ○冲突 │ ●合理 ○较高 ○过高 │ ●低 ○中 ○高 │          │
+│  └─────────────┴─────────────┴─────────────┴───────────┘ │
+│                                                         │
+│  [加载示例数据] [生成并预览报告]                         │
 │                                                         │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -237,10 +264,31 @@ ycas-report-lite/
 | | measureDate | date | - | 默认为今天 |
 | **遗传背景** | fatherHeight | number | ✓ | 140-220cm |
 | | motherHeight | number | ✓ | 130-200cm |
-| **4D评分** | d1Score | range/number | ✓ | 0-100 |
-| | d2Score | range/number | ✓ | 0-100 |
-| | d3Score | range/number | ✓ | 0-100 |
-| | d4Score | range/number | ✓ | 0-100 |
+| **D1 深度睡眠** | d1_sleepDifficulty | radio | ✓ | none/occasional/often |
+| | d1_nightWaking | radio | ✓ | 0/1-2/3+ |
+| | d1_earlyWaking | radio | ✓ | none/occasional/often |
+| | d1_dayEnergy | radio | ✓ | energetic/normal/tired |
+| | d1_sleepTime | time | - | 默认为21:30 |
+| | d1_wakeTime | time | - | 默认为07:00 |
+| | d1_sleepDuration | number | - | 0.5-16小时 |
+| **D2 精准营养** | d2_pickyEating | radio | ✓ | none/mild/moderate/severe |
+| | d2_mealRegularity | radio | ✓ | regular/irregular |
+| | d2_snackIntake | radio | ✓ | rarely/sometimes/often |
+| | d2_breakfastHabit | radio | ✓ | daily/occasional/rarely |
+| | d2_milkIntake | number | - | 0-2000ml |
+| | d2_calciumSupplement | radio | - | true/false |
+| **D3 纵向运动** | d3_exerciseFrequency | radio | ✓ | <=2/3-4/>=5 |
+| | d3_verticalSportRatio | radio | ✓ | <40/40-60/>=60 |
+| | d3_duration | radio | ✓ | <30/30-45/>=45 |
+| | d3_intensity | radio | ✓ | light/moderate/vigorous |
+| | d3_mainSports | text | - | 运动项目列表 |
+| **D4 情绪与习惯** | d4_anxiety | radio | ✓ | none/occasional/frequent |
+| | d4_sleepQuality | radio | ✓ | good/fair/poor |
+| | d4_appetiteChange | radio | ✓ | none/decreased/increased |
+| | d4_socialWillingness | radio | ✓ | high/medium/low |
+| | d4_familyAtmosphere | radio | ✓ | harmonious/tense/conflict |
+| | d4_parentExpectation | radio | ✓ | reasonable/high/excessive |
+| | d4_academicPressure | radio | ✓ | low/medium/high |
 
 ##### 实现代码
 
@@ -365,11 +413,28 @@ const FormHandler = {
 | F | 体重(kg) | weight | ✓ | 26.8 |
 | G | 父亲身高 | fatherHeight | ✓ | 175 |
 | H | 母亲身高 | motherHeight | ✓ | 162 |
-| I | D1睡眠评分 | d1Score | ✓ | 85 |
-| J | D2营养评分 | d2Score | ✓ | 68 |
-| K | D3运动评分 | d3Score | ✓ | 72 |
-| L | D4情绪评分 | d4Score | ✓ | 78 |
-| M | 评估日期 | reportDate | - | 2025-02-11 |
+| I | 评估日期 | reportDate | - | 2025-02-11 |
+| J | D1-入睡困难 | d1_sleepDifficulty | ✓ | 无 |
+| K | D1-夜间觉醒 | d1_nightWaking | ✓ | 0次 |
+| L | D1-早醒情况 | d1_earlyWaking | ✓ | 无 |
+| M | D1-日间精神 | d1_dayEnergy | ✓ | 充沛 |
+| N | D2-挑食偏食 | d2_pickyEating | ✓ | 中度 |
+| O | D2-进餐时间 | d2_mealRegularity | ✓ | 不规律 |
+| P | D2-零食饮料 | d2_snackIntake | ✓ | 经常 |
+| Q | D2-早餐习惯 | d2_breakfastHabit | ✓ | 偶尔不吃 |
+| R | D2-牛奶摄入(ml) | d2_milkIntake | - | 500 |
+| S | D3-运动频率 | d3_exerciseFrequency | ✓ | 3-4次/周 |
+| T | D3-纵向运动占比 | d3_verticalSportRatio | ✓ | 40-60% |
+| U | D3-单次运动时长 | d3_duration | ✓ | 30-45分钟 |
+| V | D3-运动强度 | d3_intensity | ✓ | 中等 |
+| W | D3-主要运动项目 | d3_mainSports | - | 跳绳, 跑步 |
+| X | D4-焦虑情绪 | d4_anxiety | ✓ | 偶尔 |
+| Y | D4-睡眠质量 | d4_sleepQuality | ✓ | 好 |
+| Z | D4-食欲变化 | d4_appetiteChange | ✓ | 无变化 |
+| AA | D4-社交意愿 | d4_socialWillingness | ✓ | 高 |
+| AB | D4-家庭氛围 | d4_familyAtmosphere | ✓ | 和谐 |
+| AC | D4-父母期望 | d4_parentExpectation | ✓ | 合理 |
+| AD | D4-学业压力 | d4_academicPressure | ✓ | 低 |
 
 ##### 界面设计
 
@@ -640,12 +705,28 @@ const ExcelHandler = {
 // 生成并下载Excel模板
 function downloadTemplate() {
   const template = [
-    ['评估编号', '儿童姓名', '性别', '出生日期', '身高(cm)', '体重(kg)', 
-     '父亲身高', '母亲身高', 'D1睡眠评分', 'D2营养评分', 'D3运动评分', 'D4情绪评分', '评估日期'],
-    ['YCAS-2025-001', '张小萌', '女', '2016-03-15', 128.5, 26.8, 
-     175, 162, 85, 68, 72, 78, '2025-02-11'],
-    ['YCAS-2025-002', '王小明', '男', '2015-08-20', 135.0, 30.2, 
-     178, 165, 75, 80, 85, 70, '2025-02-11']
+    ['评估编号', '儿童姓名', '性别', '出生日期', '身高(cm)', '体重(kg)',
+     '父亲身高', '母亲身高', '评估日期',
+     // D1 深度睡眠
+     'D1-入睡困难', 'D1-夜间觉醒', 'D1-早醒情况', 'D1-日间精神',
+     // D2 精准营养
+     'D2-挑食偏食', 'D2-进餐时间', 'D2-零食饮料', 'D2-早餐习惯', 'D2-牛奶摄入(ml)',
+     // D3 纵向运动
+     'D3-运动频率', 'D3-纵向运动占比', 'D3-单次运动时长', 'D3-运动强度', 'D3-主要运动项目',
+     // D4 情绪与习惯
+     'D4-焦虑情绪', 'D4-睡眠质量', 'D4-食欲变化', 'D4-社交意愿', 'D4-家庭氛围', 'D4-父母期望', 'D4-学业压力'],
+    ['YCAS-2025-001', '张小萌', '女', '2016-03-15', 128.5, 26.8,
+     175, 162, '2025-02-11',
+     '无', '0次', '无', '充沛',
+     '中度', '不规律', '经常', '偶尔不吃', 500,
+     '3-4次/周', '40-60%', '30-45分钟', '中等', '跳绳, 跑步',
+     '偶尔', '好', '无变化', '高', '和谐', '合理', '低'],
+    ['YCAS-2025-002', '王小明', '男', '2015-08-20', 135.0, 30.2,
+     178, 165, '2025-02-11',
+     '偶尔', '1-2次', '偶尔', '一般',
+     '轻度', '规律', '偶尔', '每天吃', 600,
+     '>=5次/周', '>=60%', '>=45分钟', '剧烈', '篮球, 摸高',
+     '无', '好', '无变化', '高', '和谐', '合理', '中']
   ];
   
   const ws = XLSX.utils.aoa_to_sheet(template);
@@ -654,9 +735,16 @@ function downloadTemplate() {
   
   // 设置列宽
   ws['!cols'] = [
-    { wch: 15 }, { wch: 10 }, { wch: 6 }, { wch: 12 },
+    { wch: 16 }, { wch: 10 }, { wch: 6 }, { wch: 12 },
+    { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 12 },
+    // D1
     { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
-    { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 }
+    // D2
+    { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 12 },
+    // D3
+    { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 10 }, { wch: 15 },
+    // D4
+    { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }
   ];
   
   XLSX.writeFile(wb, 'Y-CAS数据导入模板.xlsx');
@@ -1306,9 +1394,34 @@ function exportPDF() {
 
 ## 4. 数据输入规范
 
-### 4.1 数据准备流程
+### 4.1 数据收集流程说明
 
-#### 方式一：单用户表单录入（推荐）
+#### 4.1.1 4D维度数据收集流程
+
+```
+1. 准备评估资料
+   ↓
+2. 选择数据输入方式
+   ├── 在线交互式表单系统
+   │   ├── 填写基础信息
+   │   ├── 填写4D维度详细评估
+   │   ├── 实时预览报告
+   │   └── 导出PDF
+   └── Excel文件导入
+       ├── 下载Excel模板
+       ├── 按模板填写批量数据
+       ├── 上传Excel文件
+       ├── 预览数据列表
+       └── 批量导出PDF
+   ↓
+3. 生成评估报告
+   ↓
+4. 发送报告给家长
+   ↓
+5. 建立随访计划
+```
+
+#### 4.1.2 单用户表单录入流程（推荐）
 
 ```
 收到用户资料（微信/邮件/电话）
@@ -1317,38 +1430,60 @@ function exportPDF() {
     ↓
 选择"单用户录入"标签
     ↓
-在线填写表单
+填写基础信息（姓名、性别、出生日期、身高、体重）
     ↓
-实时预览报告效果
+填写遗传背景（父亲身高、母亲身高）
     ↓
-点击"导出PDF"
+填写4D维度详细评估：
+    ├── D1 深度睡眠（入睡困难、夜间觉醒、早醒情况、日间精神）
+    ├── D2 精准营养（挑食偏食、进餐时间、零食饮料、早餐习惯）
+    ├── D3 纵向运动（运动频率、纵向运动占比、单次运动时长、运动强度）
+    └── D4 情绪与习惯（焦虑情绪、睡眠质量、食欲变化、社交意愿、家庭氛围）
+    ↓
+点击"生成并预览报告"
+    ↓
+检查报告内容是否正确
+    ↓
+点击"导出PDF"生成报告
     ↓
 发送给家长
 ```
 
-#### 方式二：批量Excel导入（推荐用于3人以上）
+#### 4.1.3 批量Excel导入流程（推荐用于3人以上）
 
 ```
 收到多个用户资料
-    ↓
-下载Excel模板
-    ↓
-整理数据到Excel
     ↓
 打开 report-generator.html
     ↓
 选择"批量导入"标签
     ↓
-上传Excel文件
+点击"下载Excel模板"
     ↓
-预览数据列表
+按模板格式填写多个用户数据
+    ├── 基础信息
+    ├── 遗传背景
+    ├── 4D维度详细评估
+    └── 评估日期
     ↓
-批量导出PDF（自动打包ZIP）
+保存Excel文件
+    ↓
+点击或拖拽Excel文件到上传区域
+    ↓
+系统自动解析并预览数据列表
+    ↓
+检查数据是否正确
+    ↓
+选择导出方式：
+    ├── 导出选中PDF
+    └── 打包下载ZIP
+    ↓
+批量生成报告
     ↓
 分别发送给家长
 ```
 
-#### 方式三：配置文件编辑（高级用户）
+#### 4.1.4 配置文件编辑流程（高级用户）
 
 ```
 收到用户资料
@@ -1356,6 +1491,12 @@ function exportPDF() {
 整理关键信息到 Excel/表格
     ↓
 将数据填入 data/config.js
+    ├── 基础信息
+    ├── 遗传背景
+    ├── 4D维度详细评估数据
+    └── 其他配置项
+    ↓
+保存配置文件
     ↓
 打开 report-generator.html 预览
     ↓
@@ -1380,7 +1521,32 @@ function exportPDF() {
 | | measurements.heightPercentile | string | 'P50' | P3/P10/P25/P50/P75/P90/P97 |
 | 遗传背景 | genetics.fatherHeight | number | 175 | ✓ |
 | | genetics.motherHeight | number | 162 | ✓ |
-| 4D评分 | scores4D.d1_sleep | number | 85 | ✓ |
+| **D1 深度睡眠** | details4D.d1.sleepDifficulty | enum | "none" | ✓ |
+| | details4D.d1.nightWaking | enum | "0" | ✓ |
+| | details4D.d1.earlyWaking | enum | "none" | ✓ |
+| | details4D.d1.dayEnergy | enum | "energetic" | ✓ |
+| | details4D.d1.sleepTime | string | "21:30" | - |
+| | details4D.d1.wakeTime | string | "07:00" | - |
+| | details4D.d1.sleepDuration | number | 9.5 | - |
+| **D2 精准营养** | details4D.d2.pickyEating | enum | "moderate" | ✓ |
+| | details4D.d2.mealRegularity | enum | "irregular" | ✓ |
+| | details4D.d2.snackIntake | enum | "often" | ✓ |
+| | details4D.d2.breakfastHabit | enum | "occasional" | ✓ |
+| | details4D.d2.milkIntake | number | 500 | - |
+| | details4D.d2.calciumSupplement | boolean | false | - |
+| **D3 纵向运动** | details4D.d3.exerciseFrequency | enum | "3-4" | ✓ |
+| | details4D.d3.verticalSportRatio | enum | "40-60" | ✓ |
+| | details4D.d3.duration | enum | "30-45" | ✓ |
+| | details4D.d3.intensity | enum | "moderate" | ✓ |
+| | details4D.d3.mainSports | array | ["跳绳", "跑步"] | - |
+| **D4 情绪与习惯** | details4D.d4.anxiety | enum | "occasional" | ✓ |
+| | details4D.d4.sleepQuality | enum | "good" | ✓ |
+| | details4D.d4.appetiteChange | enum | "none" | ✓ |
+| | details4D.d4.socialWillingness | enum | "high" | ✓ |
+| | details4D.d4.familyAtmosphere | enum | "harmonious" | ✓ |
+| | details4D.d4.parentExpectation | enum | "reasonable" | ✓ |
+| | details4D.d4.academicPressure | enum | "low" | ✓ |
+| **4D评分** | scores4D.d1_sleep | number | 85 | ✓ |
 | | scores4D.d2_nutrition | number | 68 | ✓ |
 | | scores4D.d3_sport | number | 72 | ✓ |
 | | scores4D.d4_mood | number | 78 | ✓ |
@@ -1398,10 +1564,33 @@ const QUICK_CONFIG = {
   weight: 0, // kg
   fatherHeight: 0, // cm
   motherHeight: 0, // cm
-  d1Score: 75,
-  d2Score: 75,
-  d3Score: 75,
-  d4Score: 75,
+  
+  // D1 深度睡眠
+  d1_sleepDifficulty: 'none', // none/occasional/often
+  d1_nightWaking: '0', // 0/1-2/3+
+  d1_earlyWaking: 'none', // none/occasional/often
+  d1_dayEnergy: 'energetic', // energetic/normal/tired
+  
+  // D2 精准营养
+  d2_pickyEating: 'moderate', // none/mild/moderate/severe
+  d2_mealRegularity: 'irregular', // regular/irregular
+  d2_snackIntake: 'often', // rarely/sometimes/often
+  d2_breakfastHabit: 'occasional', // daily/occasional/rarely
+  
+  // D3 纵向运动
+  d3_exerciseFrequency: '3-4', // <=2/3-4/>=5
+  d3_verticalSportRatio: '40-60', // <40/40-60/>=60
+  d3_duration: '30-45', // <30/30-45/>=45
+  d3_intensity: 'moderate', // light/moderate/vigorous
+  
+  // D4 情绪与习惯
+  d4_anxiety: 'occasional', // none/occasional/frequent
+  d4_sleepQuality: 'good', // good/fair/poor
+  d4_appetiteChange: 'none', // none/decreased/increased
+  d4_socialWillingness: 'high', // high/medium/low
+  d4_familyAtmosphere: 'harmonious', // harmonious/tense/conflict
+  d4_parentExpectation: 'reasonable', // reasonable/high/excessive
+  d4_academicPressure: 'low', // low/medium/high
   
   // 可选修改
   reportDate: new Date().toISOString().split('T')[0],

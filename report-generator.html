@@ -131,40 +131,225 @@
           </div>
         </div>
 
-        <!-- 4D评分 -->
+        <!-- 4D维度详细评估 -->
         <div class="form-section">
-          <div class="form-section-title"><i class="fas fa-chart-radar"></i>4D维度评分（0-100分）</div>
-          <div class="form-grid cols-2">
-            <div class="form-group">
-              <label class="form-label">D1 深度睡眠 <span class="required">*</span></label>
-              <div class="range-group">
-                <input type="range" id="d1Range" name="d1Score" min="0" max="100" value="75"
-                  data-validate='{"required":true,"type":"number","min":0,"max":100}'>
-                <span class="range-value" id="d1Range-display">75</span>
+          <div class="form-section-title"><i class="fas fa-chart-radar"></i>4D维度详细评估</div>
+          
+          <!-- D1 深度睡眠 -->
+          <div class="dimension-section">
+            <div class="dimension-title">
+              <div class="dimension-badge d1">D1</div>
+              <span>深度睡眠</span>
+            </div>
+            <div class="form-grid cols-2">
+              <div class="form-group">
+                <label class="form-label">入睡困难</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d1_sleepDifficulty" value="none"> 无</label>
+                  <label><input type="radio" name="d1_sleepDifficulty" value="occasional"> 偶尔</label>
+                  <label><input type="radio" name="d1_sleepDifficulty" value="often"> 经常</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">夜间觉醒</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d1_nightWaking" value="0"> 0次</label>
+                  <label><input type="radio" name="d1_nightWaking" value="1-2"> 1-2次</label>
+                  <label><input type="radio" name="d1_nightWaking" value="3+"> 3次以上</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">早醒情况</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d1_earlyWaking" value="none"> 无</label>
+                  <label><input type="radio" name="d1_earlyWaking" value="occasional"> 偶尔</label>
+                  <label><input type="radio" name="d1_earlyWaking" value="often"> 经常</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">日间精神</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d1_dayEnergy" value="energetic"> 充沛</label>
+                  <label><input type="radio" name="d1_dayEnergy" value="normal"> 一般</label>
+                  <label><input type="radio" name="d1_dayEnergy" value="tired"> 疲倦</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">入睡时间</label>
+                <input type="time" name="d1_sleepTime" class="form-input" value="21:30">
+              </div>
+              <div class="form-group">
+                <label class="form-label">起床时间</label>
+                <input type="time" name="d1_wakeTime" class="form-input" value="07:00">
+              </div>
+              <div class="form-group">
+                <label class="form-label">睡眠时长 (小时)</label>
+                <input type="number" name="d1_sleepDuration" class="form-input" step="0.5" value="9.5">
               </div>
             </div>
-            <div class="form-group">
-              <label class="form-label">D2 精准营养 <span class="required">*</span></label>
-              <div class="range-group">
-                <input type="range" id="d2Range" name="d2Score" min="0" max="100" value="75"
-                  data-validate='{"required":true,"type":"number","min":0,"max":100}'>
-                <span class="range-value" id="d2Range-display">75</span>
+          </div>
+          
+          <!-- D2 精准营养 -->
+          <div class="dimension-section">
+            <div class="dimension-title">
+              <div class="dimension-badge d2">D2</div>
+              <span>精准营养</span>
+            </div>
+            <div class="form-grid cols-2">
+              <div class="form-group">
+                <label class="form-label">挑食偏食</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d2_pickyEating" value="none"> 无</label>
+                  <label><input type="radio" name="d2_pickyEating" value="mild"> 轻度</label>
+                  <label><input type="radio" name="d2_pickyEating" value="moderate"> 中度</label>
+                  <label><input type="radio" name="d2_pickyEating" value="severe"> 重度</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">进餐时间</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d2_mealRegularity" value="regular"> 规律</label>
+                  <label><input type="radio" name="d2_mealRegularity" value="irregular"> 不规律</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">零食饮料</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d2_snackIntake" value="rarely"> 很少</label>
+                  <label><input type="radio" name="d2_snackIntake" value="sometimes"> 偶尔</label>
+                  <label><input type="radio" name="d2_snackIntake" value="often"> 经常</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">早餐习惯</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d2_breakfastHabit" value="daily"> 每天吃</label>
+                  <label><input type="radio" name="d2_breakfastHabit" value="occasional"> 偶尔不吃</label>
+                  <label><input type="radio" name="d2_breakfastHabit" value="rarely"> 经常不吃</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">牛奶摄入 (ml/天)</label>
+                <input type="number" name="d2_milkIntake" class="form-input" value="500">
+              </div>
+              <div class="form-group">
+                <label class="form-label">补钙补充</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d2_calciumSupplement" value="true"> 是</label>
+                  <label><input type="radio" name="d2_calciumSupplement" value="false"> 否</label>
+                </div>
               </div>
             </div>
-            <div class="form-group">
-              <label class="form-label">D3 纵向运动 <span class="required">*</span></label>
-              <div class="range-group">
-                <input type="range" id="d3Range" name="d3Score" min="0" max="100" value="75"
-                  data-validate='{"required":true,"type":"number","min":0,"max":100}'>
-                <span class="range-value" id="d3Range-display">75</span>
+          </div>
+          
+          <!-- D3 纵向运动 -->
+          <div class="dimension-section">
+            <div class="dimension-title">
+              <div class="dimension-badge d3">D3</div>
+              <span>纵向运动</span>
+            </div>
+            <div class="form-grid cols-2">
+              <div class="form-group">
+                <label class="form-label">运动频率</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d3_exerciseFrequency" value="<=2"> <=2次/周</label>
+                  <label><input type="radio" name="d3_exerciseFrequency" value="3-4"> 3-4次/周</label>
+                  <label><input type="radio" name="d3_exerciseFrequency" value=">=5"> >=5次/周</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">纵向运动占比</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d3_verticalSportRatio" value="<40"> <40%</label>
+                  <label><input type="radio" name="d3_verticalSportRatio" value="40-60"> 40-60%</label>
+                  <label><input type="radio" name="d3_verticalSportRatio" value=">=60"> >=60%</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">单次运动时长</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d3_duration" value="<30"> <30分钟</label>
+                  <label><input type="radio" name="d3_duration" value="30-45"> 30-45分钟</label>
+                  <label><input type="radio" name="d3_duration" value=">=45"> >=45分钟</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">运动强度</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d3_intensity" value="light"> 轻度</label>
+                  <label><input type="radio" name="d3_intensity" value="moderate"> 中等</label>
+                  <label><input type="radio" name="d3_intensity" value="vigorous"> 剧烈</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">主要运动项目</label>
+                <input type="text" name="d3_mainSports" class="form-input" placeholder="如：跳绳, 跑步">
               </div>
             </div>
-            <div class="form-group">
-              <label class="form-label">D4 情绪与习惯 <span class="required">*</span></label>
-              <div class="range-group">
-                <input type="range" id="d4Range" name="d4Score" min="0" max="100" value="75"
-                  data-validate='{"required":true,"type":"number","min":0,"max":100}'>
-                <span class="range-value" id="d4Range-display">75</span>
+          </div>
+          
+          <!-- D4 情绪与习惯 -->
+          <div class="dimension-section">
+            <div class="dimension-title">
+              <div class="dimension-badge d4">D4</div>
+              <span>情绪与习惯</span>
+            </div>
+            <div class="form-grid cols-2">
+              <div class="form-group">
+                <label class="form-label">焦虑情绪</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d4_anxiety" value="none"> 无</label>
+                  <label><input type="radio" name="d4_anxiety" value="occasional"> 偶尔</label>
+                  <label><input type="radio" name="d4_anxiety" value="frequent"> 经常</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">睡眠质量</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d4_sleepQuality" value="good"> 好</label>
+                  <label><input type="radio" name="d4_sleepQuality" value="fair"> 一般</label>
+                  <label><input type="radio" name="d4_sleepQuality" value="poor"> 差</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">食欲变化</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d4_appetiteChange" value="none"> 无变化</label>
+                  <label><input type="radio" name="d4_appetiteChange" value="decreased"> 减少</label>
+                  <label><input type="radio" name="d4_appetiteChange" value="increased"> 增加</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">社交意愿</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d4_socialWillingness" value="high"> 高</label>
+                  <label><input type="radio" name="d4_socialWillingness" value="medium"> 中</label>
+                  <label><input type="radio" name="d4_socialWillingness" value="low"> 低</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">家庭氛围</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d4_familyAtmosphere" value="harmonious"> 和谐</label>
+                  <label><input type="radio" name="d4_familyAtmosphere" value="tense"> 紧张</label>
+                  <label><input type="radio" name="d4_familyAtmosphere" value="conflict"> 冲突</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">父母期望</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d4_parentExpectation" value="reasonable"> 合理</label>
+                  <label><input type="radio" name="d4_parentExpectation" value="high"> 较高</label>
+                  <label><input type="radio" name="d4_parentExpectation" value="excessive"> 过高</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">学业压力</label>
+                <div class="radio-group">
+                  <label><input type="radio" name="d4_academicPressure" value="low"> 低</label>
+                  <label><input type="radio" name="d4_academicPressure" value="medium"> 中</label>
+                  <label><input type="radio" name="d4_academicPressure" value="high"> 高</label>
+                </div>
               </div>
             </div>
           </div>
@@ -306,15 +491,25 @@
         form.querySelector('[name="motherHeight"]').value = USER_CONFIG.genetics.motherHeight;
 
         var scores = USER_CONFIG.scores4D;
-        var d1 = form.querySelector('[name="d1Score"]'); d1.value = scores.d1_sleep;
-        var d2 = form.querySelector('[name="d2Score"]'); d2.value = scores.d2_nutrition;
-        var d3 = form.querySelector('[name="d3Score"]'); d3.value = scores.d3_sport;
-        var d4 = form.querySelector('[name="d4Score"]'); d4.value = scores.d4_mood;
+        // 安全设置评分值，避免元素不存在时出错
+        var d1 = form.querySelector('[name="d1Score"]');
+        if (d1) d1.value = scores.d1_sleep;
+        var d2 = form.querySelector('[name="d2Score"]');
+        if (d2) d2.value = scores.d2_nutrition;
+        var d3 = form.querySelector('[name="d3Score"]');
+        if (d3) d3.value = scores.d3_sport;
+        var d4 = form.querySelector('[name="d4Score"]');
+        if (d4) d4.value = scores.d4_mood;
 
-        document.getElementById('d1Range-display').textContent = scores.d1_sleep;
-        document.getElementById('d2Range-display').textContent = scores.d2_nutrition;
-        document.getElementById('d3Range-display').textContent = scores.d3_sport;
-        document.getElementById('d4Range-display').textContent = scores.d4_mood;
+        // 安全设置显示值，避免元素不存在时出错
+        var d1Display = document.getElementById('d1Range-display');
+        if (d1Display) d1Display.textContent = scores.d1_sleep;
+        var d2Display = document.getElementById('d2Range-display');
+        if (d2Display) d2Display.textContent = scores.d2_nutrition;
+        var d3Display = document.getElementById('d3Range-display');
+        if (d3Display) d3Display.textContent = scores.d3_sport;
+        var d4Display = document.getElementById('d4Range-display');
+        if (d4Display) d4Display.textContent = scores.d4_mood;
       }
 
       document.getElementById('config-status').textContent = '示例数据已加载';
