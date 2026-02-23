@@ -1,8 +1,16 @@
 /**
- * Y-CAS 报告渲染引擎 - 6页报告动态生成
- */
+* Y-CAS 报告渲染引擎 - 6页报告动态生成
+*/
 const ReportRenderer = {
   data: null,
+
+  // 信任背书样式
+  trustBadgeStyle: {
+    main: 'background:linear-gradient(135deg,#f8fafc 0%,#f1f5f9 100%);border:1px solid #e2e8f0;border-left:4px solid #0c9af0;border-radius:12px;padding:16px 20px;margin:15px 0;font-size:12px;line-height:1.7;color:#475569;',
+    title: 'font-weight:600;color:#0f172a;margin-bottom:8px;display:flex;align-items:center;gap:8px;font-size:13px;',
+    small: 'background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 14px;font-size:11px;line-height:1.6;color:#64748b;',
+    inline: 'display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#e0effe 0%,#f0f7ff 100%);border:1px solid #bae0fd;border-radius:8px;padding:8px 14px;font-size:11px;color:#0367a9;margin-left:12px;'
+  },
 
   /**
    * 初始化渲染
@@ -73,6 +81,10 @@ const ReportRenderer = {
         '<div class="cover-info-row"><span class="cover-info-label">评估编号</span><span class="cover-info-value">' + (d.report.id || '') + '</span></div>' +
         '<div class="cover-info-row"><span class="cover-info-label">评估对象</span><span class="cover-info-value">' + (d.child.name || '') + '</span></div>' +
         '<div class="cover-info-row"><span class="cover-info-label">评估日期</span><span class="cover-info-value">' + (d.report.date || '') + '</span></div>' +
+      '</div>' +
+      '<div style="margin-top:40px;background:rgba(255,255,255,0.12);border-radius:12px;padding:20px 30px;border:1px solid rgba(255,255,255,0.2);">' +
+        '<p style="font-size:13px;margin-bottom:8px;opacity:0.95;"><strong>西南儿童医院"医育结合"战略合作伙伴</strong></p>' +
+        '<p style="font-size:11px;opacity:0.8;line-height:1.6;">本评估基于Y-CAS\u2122多维度动态评估系统，由益康顺与西南儿童医院联合开发，确保评估逻辑的科学性与严谨性。</p>' +
       '</div>' +
       '<div class="cover-footer">' + ((d.institution && d.institution.slogan) || '医育结合 · 4D科学 · 5S品质') + '</div>';
   },
@@ -150,6 +162,11 @@ const ReportRenderer = {
 
       boneAgeHtml +
 
+      '<div style="' + this.trustBadgeStyle.main + '">' +
+        '<div style="' + this.trustBadgeStyle.title + '">📋 数据保障承诺</div>' +
+        '<p>所有测量数据均采用<strong>医疗级标准</strong>采集，身高体重测量误差±0.1cm/0.1kg。遗传靶身高计算依据Tanner-Whitehouse改良公式，符合国际儿科内分泌学会共识。</p>' +
+      '</div>' +
+
       '<div class="page-footer">' +
         '<span>' + ((d.institution && d.institution.name) || 'Y-CAS评估系统') + '</span>' +
         '<span>第 2 / 6 页</span>' +
@@ -190,6 +207,7 @@ const ReportRenderer = {
           '<div style="font-size:14px;color:var(--gray-400)">综合评级</div>' +
           '<div style="font-size:20px;font-weight:700;color:' + rating.color + ';margin-top:4px;">' + rating.label + '</div>' +
         '</div>' +
+        '<span style="' + this.trustBadgeStyle.inline + '"><i class="fas fa-hospital"></i>评估依据：基于西南儿童医院临床生长发育学共识 | 由持证健康管理师执行评估</span>' +
       '</div>' +
 
       '<div class="score-cards">' +
@@ -200,6 +218,11 @@ const ReportRenderer = {
       '</div>' +
 
       '<div class="chart-container"><canvas id="radarChart"></canvas></div>' +
+
+      '<div style="' + this.trustBadgeStyle.main + '">' +
+        '<div style="' + this.trustBadgeStyle.title + '">🔍 为什么评估这4个维度？</div>' +
+        '<p>身高发育是睡眠、营养、运动、情绪多因素协同作用的结果。益康顺摒弃碎片化经验，依托与<strong>西南儿童医院</strong>的战略合作，将临床生长发育共识转化为家庭可执行的评估体系。</p>' +
+      '</div>' +
 
       '<div style="margin-top:16px;">' +
         this._renderDetailSummary('D1 睡眠', details.d1) +
@@ -297,9 +320,18 @@ const ReportRenderer = {
         '</div>' : '') +
       '</div>' +
 
+      '<div style="' + this.trustBadgeStyle.main + '">' +
+        '<div style="' + this.trustBadgeStyle.title + '">📊 预测模型说明</div>' +
+        '<p>当前趋势预测基于骨龄评估与生长曲线拟合；4D优化后预测基于益康顺临床干预数据库（N=<strong>5,000+</strong>例）。如发现生长速率骤降、性征提前发育等异常信号，我们已开通<strong>西南儿童医院·确诊绿色通道</strong>，实现零延迟对接。</p>' +
+      '</div>' +
+
       '<div class="section-title">风险评估</div>' +
       '<div class="info-card">' +
         this._renderRisks(d.risks) +
+      '</div>' +
+
+      '<div style="' + this.trustBadgeStyle.small + 'border-left:4px solid #f59e0b;">' +
+        '<strong style="color:#92400e;"><i class="fas fa-exclamation-triangle"></i> 风险判定标准：</strong> 依据《中国儿童生长迟缓诊断标准》《中枢性性早熟诊断与治疗专家共识》等行业指南，由益康顺医学顾问团队审核。' +
       '</div>' +
 
       '<div class="page-footer">' +
@@ -376,6 +408,12 @@ const ReportRenderer = {
             d.followUp.items.map(function(item) { return '<li>' + item + '</li>'; }).join('') +
           '</ul></div>' : '') +
         '</div>';
+
+      followUpHtml +=
+        '<div style="' + this.trustBadgeStyle.main + '">' +
+          '<div style="' + this.trustBadgeStyle.title + '">🔄 动态追踪承诺</div>' +
+          '<p>益康顺建立\'使用反馈\'追踪体系，通过动态监测孩子的使用情况与生长数据，对管理方案进行适时校准（<strong>5S-System</strong>标准）。</p>' +
+        '</div>';
     }
 
     el.innerHTML =
@@ -383,6 +421,11 @@ const ReportRenderer = {
         '<div class="header-icon"><i class="fas fa-clipboard-list"></i></div>' +
         '<div class="header-title">个性化干预方案</div>' +
         '<div class="header-sub">Personalized Intervention Plan</div>' +
+      '</div>' +
+
+      '<div style="' + this.trustBadgeStyle.main + '">' +
+        '<div style="' + this.trustBadgeStyle.title + '">👨‍⚕️ 您的专属健康管家团队</div>' +
+        '<p>本方案由<strong>国家注册健康管理师</strong>及<strong>公共营养师</strong>联合制定，所有干预建议均拥有明确营养学原理或文献支持，拒绝盲目添加。</p>' +
       '</div>' +
 
       '<div class="section-title">4D维度干预建议</div>' +
@@ -408,8 +451,19 @@ const ReportRenderer = {
     var d = this.data;
     var advisor = d.advisor || {};
     var rating = d.rating || {};
+    var predictions = d.predictions || {};
     var el = document.querySelector('[data-page="6"]');
     if (!el) return;
+
+    // 同步健康师寄语中的额外增长空间数值与预测数据保持一致
+    var message = advisor.message || '';
+    var improvement = predictions.improvement;
+    if (improvement && message) {
+      // 替换占位符 {{improvement}}
+      message = message.replace(/\{\{improvement\}\}/g, improvement);
+      // 替换各种格式的数值（如：4cm、4厘米、4 cm、4.5cm等）
+      message = message.replace(/\d+(?:\.\d+)?\s*(?:cm|厘米)/g, improvement + 'cm');
+    }
 
     // 生成行动清单
     var actionItems = [];
@@ -455,16 +509,23 @@ const ReportRenderer = {
 
       '<div class="section-title">健康师寄语</div>' +
       '<div class="advisor-message">' +
-        (advisor.message || '') +
-      '</div>' +
-      '<div class="advisor-sign">' +
-        '<span>' + (advisor.title || '') + '</span>' +
-        '<span class="sign-name">' + (advisor.name || '') + '</span>' +
+        message +
       '</div>' +
 
-      (advisor.phone ? '<div style="margin-top:20px;text-align:center;font-size:13px;color:var(--gray-400);">' +
-        '<i class="fas fa-phone" style="margin-right:6px;"></i>咨询热线: ' + advisor.phone +
-      '</div>' : '') +
+
+      '<div style="background:linear-gradient(135deg,#f0f7ff 0%,#e0effe 100%);border-left:4px solid #0c9af0;border-radius:12px;padding:16px 20px;margin:20px 0 8px 0;">' +
+        '<div style="font-weight:600;color:#0f172a;margin-bottom:12px;display:flex;align-items:center;gap:8px;font-size:13px;">🛡️ 益康顺5S全链严选承诺</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px;">' +
+          '<div style="font-size:11px;"><strong style="color:#0c9af0;">Safety安全底线：</strong>成分\'负面清单\'，剔除非必要添加剂</div>' +
+          '<div style="font-size:11px;"><strong style="color:#0c9af0;">Source原料甄选：</strong>优选北欧/澳洲/新西兰核心产区</div>' +
+          '<div style="font-size:11px;"><strong style="color:#0c9af0;">Science科学依据：</strong>核心成分必须有文献支持</div>' +
+          '<div style="font-size:11px;"><strong style="color:#0c9af0;">Standard品质对标：</strong>优先合作GMP/ISO认证品牌</div>' +
+          '<div style="font-size:11px;"><strong style="color:#0c9af0;">System动态反馈：</strong>每月随访，方案适时校准</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="text-align:center;font-size:11px;color:#0367a9;margin-bottom:20px;">' +
+        '西南儿童医院战略合作企业 | 专注家庭场景的儿童健康管理' +
+      '</div>' +
 
       '<div class="page-footer">' +
         '<span>' + ((d.institution && d.institution.name) || 'Y-CAS评估系统') + '</span>' +

@@ -555,6 +555,57 @@
             background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
             border-left-color: #10b981;
         }
+        
+        /* Trust Badge Styles */
+        .trust-badge {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 1px solid #e2e8f0;
+            border-left: 4px solid #0c9af0;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 15px 0;
+            font-size: 12px;
+            line-height: 1.7;
+            color: #475569;
+        }
+        
+        .trust-badge-title {
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+        
+        .trust-badge-highlight {
+            font-weight: 600;
+            color: #0c9af0;
+        }
+        
+        .trust-badge-inline {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #e0effe 0%, #f0f7ff 100%);
+            border: 1px solid #bae0fd;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 11px;
+            color: #0367a9;
+            margin-left: 12px;
+        }
+        
+        .trust-badge-small {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 11px;
+            line-height: 1.6;
+            color: #64748b;
+        }
     </style>
 </head>
 <body>
@@ -585,6 +636,11 @@
                     <span class="cover-info-label">报告生成时间</span>
                     <span class="cover-info-value">2025年2月11日 14:30</span>
                 </div>
+            </div>
+            
+            <div style="margin-top: 40px; background: rgba(255,255,255,0.12); border-radius: 12px; padding: 20px 30px; border: 1px solid rgba(255,255,255,0.2);">
+                <p style="font-size: 13px; margin-bottom: 8px; opacity: 0.95;"><strong>西南儿童医院"医育结合"战略合作伙伴</strong></p>
+                <p style="font-size: 11px; opacity: 0.8; line-height: 1.6;">本评估基于Y-CAS™多维度动态评估系统，由益康顺与西南儿童医院联合开发，确保评估逻辑的科学性与严谨性。</p>
             </div>
             
             <div class="cover-footer">
@@ -709,6 +765,11 @@
                 </div>
             </div>
 
+            <div class="trust-badge">
+                <div class="trust-badge-title">📋 数据保障承诺</div>
+                <p>所有测量数据均采用<strong>医疗级标准</strong>采集，身高体重测量误差±0.1cm/0.1kg。遗传靶身高计算依据Tanner-Whitehouse改良公式，符合国际儿科内分泌学会共识。</p>
+            </div>
+
             <div class="page-footer">
                 <span>益康顺儿童健康管理</span>
                 <span>第 2 页 / 共 6 页</span>
@@ -759,6 +820,11 @@
                 </div>
             </div>
 
+            <div class="trust-badge">
+                <div class="trust-badge-title">🔍 为什么评估这4个维度？</div>
+                <p>身高发育是睡眠、营养、运动、情绪多因素协同作用的结果。益康顺摒弃碎片化经验，依托与<strong>西南儿童医院</strong>的战略合作，将临床生长发育共识转化为家庭可执行的评估体系。</p>
+            </div>
+
             <table class="data-table">
                 <thead>
                     <tr>
@@ -800,7 +866,7 @@
                     </tr>
                     <tr style="background: linear-gradient(90deg, #f0f7ff, #f0fdf4);">
                         <td><strong>综合得分</strong></td>
-                        <td><strong style="font-size: 18px; color: #0c9af0;">75.8/100</strong></td>
+                        <td><strong style="font-size: 18px; color: #0c9af0;">75.8/100</strong><span class="trust-badge-inline"><i class="fas fa-hospital"></i>评估依据：基于西南儿童医院临床生长发育学共识 | 由持证健康管理师执行评估</span></td>
                         <td>100%</td>
                         <td><span class="badge-good" style="font-size: 11px; padding: 3px 10px;">良好</span></td>
                         <td>整体评估结果良好，建议重点改善营养维度</td>
@@ -1189,9 +1255,18 @@
                 </div>
             </div>
 
+            <div class="trust-badge">
+                <div class="trust-badge-title">📊 预测模型说明</div>
+                <p>当前趋势预测基于骨龄评估与生长曲线拟合；4D优化后预测基于益康顺临床干预数据库（N=<strong>5,000+</strong>例）。如发现生长速率骤降、性征提前发育等异常信号，我们已开通<strong>西南儿童医院·确诊绿色通道</strong>，实现零延迟对接。</p>
+            </div>
+
             <div class="highlight-box success">
                 <strong style="color: #065f46;"><i class="fas fa-lightbulb"></i> 预测分析：</strong>
                 <span style="color: #065f46;">通过4D综合干预，预计可突破遗传靶身高约4cm，达到166cm的预测身高。建议重点改善营养维度，配合规律运动和优质睡眠，最大化生长潜力。</span>
+            </div>
+
+            <div class="trust-badge-small" style="border-left: 4px solid #f59e0b;">
+                <strong style="color: #92400e;"><i class="fas fa-exclamation-triangle"></i> 风险判定标准：</strong> 依据《中国儿童生长迟缓诊断标准》《中枢性性早熟诊断与治疗专家共识》等行业指南，由益康顺医学顾问团队审核。
             </div>
 
             <div class="page-footer">
@@ -1208,6 +1283,11 @@
                     <div class="section-title">个性化干预方案</div>
                     <div class="section-subtitle">PERSONALIZED INTERVENTION PLAN</div>
                 </div>
+            </div>
+
+            <div class="trust-badge">
+                <div class="trust-badge-title">👨‍⚕️ 您的专属健康管家团队</div>
+                <p>本方案由<strong>国家注册健康管理师</strong>及<strong>公共营养师</strong>联合制定，所有干预建议均拥有明确营养学原理或文献支持，拒绝盲目添加。</p>
             </div>
 
             <table class="data-table">
@@ -1300,6 +1380,11 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            <div class="trust-badge">
+                <div class="trust-badge-title">🔄 动态追踪承诺</div>
+                <p>益康顺建立'使用反馈'追踪体系，通过动态监测孩子的使用情况与生长数据，对管理方案进行适时校准（<strong>5S-System</strong>标准）。</p>
             </div>
 
             <div class="highlight-box danger" style="margin-top: 20px;">
@@ -1398,6 +1483,20 @@
                 <div style="text-align: right; margin-top: 15px;">
                     <span style="font-size: 13px; color: #64748b;">专属健康师：李医生</span>
                 </div>
+            </div>
+
+            <div class="trust-badge" style="background: linear-gradient(135deg, #f0f7ff 0%, #e0effe 100%); border-left-color: #0c9af0;">
+                <div class="trust-badge-title">🛡️ 益康顺5S全链严选承诺</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px;">
+                    <div style="font-size: 11px;"><strong style="color: #0c9af0;">Safety安全底线：</strong>成分'负面清单'，剔除非必要添加剂</div>
+                    <div style="font-size: 11px;"><strong style="color: #0c9af0;">Source原料甄选：</strong>优选北欧/澳洲/新西兰核心产区</div>
+                    <div style="font-size: 11px;"><strong style="color: #0c9af0;">Science科学依据：</strong>核心成分必须有文献支持</div>
+                    <div style="font-size: 11px;"><strong style="color: #0c9af0;">Standard品质对标：</strong>优先合作GMP/ISO认证品牌</div>
+                    <div style="font-size: 11px;"><strong style="color: #0c9af0;">System动态反馈：</strong>每月随访，方案适时校准</div>
+                </div>
+            </div>
+            <div style="text-align: center; font-size: 11px; color: #0367a9; margin-top: 8px;">
+                西南儿童医院战略合作企业 | 专注家庭场景的儿童健康管理
             </div>
 
             <div style="margin-top: 30px; padding: 25px; background: #f8fafc; border-radius: 12px; text-align: center;">
