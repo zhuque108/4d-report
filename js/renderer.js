@@ -73,7 +73,7 @@ const ReportRenderer = {
     if (!el) return;
 
     el.innerHTML =
-      '<div class="cover-logo">益</div>' +
+      '<div class="cover-logo"><img src="assets/logo.png" alt="益康顺Logo" style="width:100%;height:100%;object-fit:contain;border-radius:20px;"></div>' +
       '<div class="cover-title">儿童身高管理评估报告</div>' +
       '<div class="cover-subtitle">Y-CAS\u2122 多维度动态评估系统</div>' +
       '<div class="cover-divider"></div>' +
