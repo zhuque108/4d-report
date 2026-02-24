@@ -169,7 +169,7 @@ const ReportRenderer = {
 
       '<div class="page-footer">' +
         '<span>' + ((d.institution && d.institution.name) || 'Y-CAS评估系统') + '</span>' +
-        '<span>第 2 / 6 页</span>' +
+        '<span>第 2 / 5 页</span>' +
       '</div>';
   },
 
@@ -233,7 +233,7 @@ const ReportRenderer = {
 
       '<div class="page-footer">' +
         '<span>' + ((d.institution && d.institution.name) || 'Y-CAS评估系统') + '</span>' +
-        '<span>第 3 / 6 页</span>' +
+        '<span>第 3 / 5 页</span>' +
       '</div>';
   },
 
@@ -254,12 +254,13 @@ const ReportRenderer = {
   },
 
   /**
-   * 第4页：生长预测
+   * 第4页：生长预测 + 干预方案
    */
   renderPrediction() {
     var d = this.data;
     var p = d.predictions || {};
     var m = d.measurements;
+    var intv = d.interventions || {};
     var el = document.querySelector('[data-page="4"]');
     if (!el) return;
 
@@ -274,6 +275,43 @@ const ReportRenderer = {
       percentileValue = Math.round(YCASCalculator.getHeightPercentileValue(m.height, d._ageYears, d.child.gender));
     }
 
+    // 构建4D维度干预建议卡片（每行2个）
+    var dimensions = [
+      { key: 'd1', label: 'D1 深度睡眠', icon: 'fa-moon', color: '#0c9af0' },
+      { key: 'd2', label: 'D2 精准营养', icon: 'fa-utensils', color: '#10b981' },
+      { key: 'd3', label: 'D3 纵向运动', icon: 'fa-running', color: '#f59e0b' },
+      { key: 'd4', label: 'D4 情绪习惯', icon: 'fa-heart', color: '#ef4444' }
+    ];
+
+    var interventionCards = dimensions.map(function(dim) {
+      var item = intv[dim.key];
+      if (!item) return '';
+      var priorityColor = item.priority === 'urgent' ? '#ef4444' : item.priority === 'improve' ? '#f59e0b' : '#10b981';
+      var priorityBg = item.priority === 'urgent' ? '#fef2f2' : item.priority === 'improve' ? '#fffbeb' : '#f0fdf4';
+      return '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:12px;box-shadow:0 1px 3px rgba(0,0,0,0.05);">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;border-bottom:1px solid #f1f5f9;padding-bottom:8px;">' +
+          '<div style="width:32px;height:32px;border-radius:8px;background:' + dim.color + ';display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;">' +
+            '<i class="fas ' + dim.icon + '"></i></div>' +
+          '<div style="flex:1;">' +
+            '<div style="font-size:13px;font-weight:600;color:#1e293b;">' + dim.label + '</div>' +
+            '<div style="font-size:11px;color:#64748b;">' + (item.problem || '') + '</div>' +
+          '</div>' +
+          '<span style="padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;background:' + priorityBg + ';color:' + priorityColor + ';">' + YCASUtils.priorityText(item.priority) + '</span>' +
+        '</div>' +
+        '<div style="margin-bottom:8px;">' +
+          '<div style="font-size:11px;color:#94a3b8;margin-bottom:4px;">改善重点</div>' +
+          '<div style="font-size:12px;color:#334155;line-height:1.5;">' + (item.focus || '') + '</div>' +
+        '</div>' +
+        '<div>' +
+          '<div style="font-size:11px;color:#94a3b8;margin-bottom:4px;">具体措施</div>' +
+          (item.actions ? '<ul style="margin:0;padding-left:14px;font-size:11px;color:#475569;line-height:1.6;">' +
+            item.actions.slice(0, 3).map(function(a) { return '<li>' + a + '</li>'; }).join('') +
+          '</ul>' : '<div style="font-size:11px;color:#94a3b8;">-</div>') +
+        '</div>' +
+        (item.duration ? '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #f1f5f9;font-size:11px;color:#64748b;"><i class="far fa-clock" style="margin-right:4px;"></i>' + item.duration + '</div>' : '') +
+      '</div>';
+    }).join('');
+
     el.innerHTML =
       '<div class="page-header">' +
         '<div class="header-icon"><i class="fas fa-chart-line"></i></div>' +
@@ -281,62 +319,63 @@ const ReportRenderer = {
         '<div class="header-sub">Growth Potential Prediction</div>' +
       '</div>' +
 
-      '<div class="section-title">当前生长状态</div>' +
-      '<div class="info-card highlight">' +
-        '<div class="info-grid cols-3">' +
-          '<div class="info-item"><span class="info-label">当前身高</span><span class="info-value" style="font-size:24px;color:var(--primary)">' + m.height + '<span class="info-unit">cm</span></span></div>' +
-          '<div class="info-item"><span class="info-label">同龄百分位</span><span class="info-value">' + (m.heightPercentile || '-') + '</span></div>' +
-          '<div class="info-item"><span class="info-label">年增长速率</span><span class="info-value">' + (m.growthRate || '-') + '<span class="info-unit">cm/年</span></span></div>' +
-        '</div>' +
-        '<div style="margin-top:12px;">' +
-          '<div style="font-size:12px;color:var(--gray-400);margin-bottom:4px;">身高在同龄人中的位置</div>' +
-          '<div class="progress-bar-container">' +
-            '<div class="progress-bar-fill" style="width:' + percentileValue + '%"></div>' +
+      '<div style="display:flex;gap:12px;">' +
+        '<div style="flex:1;">' +
+          '<div class="section-title" style="margin-top:0;">当前生长状态</div>' +
+          '<div class="info-card highlight" style="padding:12px;">' +
+            '<div class="info-grid cols-3" style="gap:8px;">' +
+              '<div class="info-item"><span class="info-label">当前身高</span><span class="info-value" style="font-size:18px;color:var(--primary)">' + m.height + '<span class="info-unit">cm</span></span></div>' +
+              '<div class="info-item"><span class="info-label">同龄百分位</span><span class="info-value">' + (m.heightPercentile || '-') + '</span></div>' +
+              '<div class="info-item"><span class="info-label">年增长速率</span><span class="info-value">' + (m.growthRate || '-') + '<span class="info-unit">cm/年</span></span></div>' +
+            '</div>' +
+            '<div style="margin-top:8px;">' +
+              '<div style="font-size:11px;color:var(--gray-400);margin-bottom:4px;">身高在同龄人中的位置</div>' +
+              '<div class="progress-bar-container">' +
+                '<div class="progress-bar-fill" style="width:' + percentileValue + '%"></div>' +
+              '</div>' +
+              '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--gray-400)">' +
+                '<span>P3 偏矮</span><span>P50 中等</span><span>P97 偏高</span>' +
+              '</div>' +
+            '</div>' +
           '</div>' +
-          '<div style="display:flex;justify-content:space-between;font-size:10px;color:var(--gray-400)">' +
-            '<span>P3 偏矮</span><span>P50 中等</span><span>P97 偏高</span>' +
+        '</div>' +
+        '<div style="flex:1;">' +
+          '<div class="section-title" style="margin-top:0;">成年身高预测</div>' +
+          '<div class="info-card" style="padding:12px;">' +
+            '<div class="prediction-bars">' +
+              '<div class="prediction-item" style="margin-bottom:8px;">' +
+                '<span class="pred-label" style="font-size:11px;">遗传靶身高</span>' +
+                '<div class="pred-bar"><div class="pred-fill genetic" style="width:' + geneticPct + '%">' + (p.genetic || '-') + ' cm</div></div>' +
+              '</div>' +
+              '<div class="prediction-item" style="margin-bottom:8px;">' +
+                '<span class="pred-label" style="font-size:11px;">当前趋势</span>' +
+                '<div class="pred-bar"><div class="pred-fill current" style="width:' + currentPct + '%">' + (p.currentTrajectory || '-') + ' cm</div></div>' +
+              '</div>' +
+              '<div class="prediction-item" style="margin-bottom:0;">' +
+                '<span class="pred-label" style="font-size:11px;">4D优化后</span>' +
+                '<div class="pred-bar"><div class="pred-fill optimized" style="width:' + optimizedPct + '%">' + (p.optimized4D || '-') + ' cm</div></div>' +
+              '</div>' +
+            '</div>' +
+            (p.improvement ? '<div style="text-align:center;margin-top:8px;padding:8px;background:var(--accent-light);border-radius:8px;">' +
+              '<span style="font-size:12px;color:var(--accent);">预期可获得 <strong>' + p.improvement + ' cm</strong> 额外增长</span>' +
+            '</div>' : '') +
           '</div>' +
         '</div>' +
       '</div>' +
 
-      '<div class="section-title">成年身高预测</div>' +
-      '<div class="info-card">' +
-        '<div class="prediction-bars">' +
-          '<div class="prediction-item">' +
-            '<span class="pred-label">遗传靶身高</span>' +
-            '<div class="pred-bar"><div class="pred-fill genetic" style="width:' + geneticPct + '%">' + (p.genetic || '-') + ' cm</div></div>' +
-          '</div>' +
-          '<div class="prediction-item">' +
-            '<span class="pred-label">当前趋势</span>' +
-            '<div class="pred-bar"><div class="pred-fill current" style="width:' + currentPct + '%">' + (p.currentTrajectory || '-') + ' cm</div></div>' +
-          '</div>' +
-          '<div class="prediction-item">' +
-            '<span class="pred-label">4D优化后</span>' +
-            '<div class="pred-bar"><div class="pred-fill optimized" style="width:' + optimizedPct + '%">' + (p.optimized4D || '-') + ' cm</div></div>' +
-          '</div>' +
-        '</div>' +
-        (p.improvement ? '<div style="text-align:center;margin-top:12px;padding:10px;background:var(--accent-light);border-radius:8px;">' +
-          '<span style="font-size:13px;color:var(--accent);">通过4D优化管理，预期可获得 <strong style="font-size:18px;">' + p.improvement + ' cm</strong> 的额外增长空间</span>' +
-        '</div>' : '') +
-      '</div>' +
-
-      '<div style="' + this.trustBadgeStyle.main + '">' +
-        '<div style="' + this.trustBadgeStyle.title + '">📊 预测模型说明</div>' +
-        '<p>当前趋势预测基于骨龄评估与生长曲线拟合；4D优化后预测基于益康顺临床干预数据库（N=<strong>5,000+</strong>例）。如发现生长速率骤降、性征提前发育等异常信号，我们已开通<strong>西南儿童医院·确诊绿色通道</strong>，实现零延迟对接。</p>' +
-      '</div>' +
-
-      '<div class="section-title">风险评估</div>' +
-      '<div class="info-card">' +
+      '<div class="section-title" style="margin-top:12px;margin-bottom:8px;">风险评估</div>' +
+      '<div class="info-card" style="padding:12px;margin-bottom:12px;">' +
         this._renderRisks(d.risks) +
       '</div>' +
 
-      '<div style="' + this.trustBadgeStyle.small + 'border-left:4px solid #f59e0b;">' +
-        '<strong style="color:#92400e;"><i class="fas fa-exclamation-triangle"></i> 风险判定标准：</strong> 依据《中国儿童生长迟缓诊断标准》《中枢性性早熟诊断与治疗专家共识》等行业指南，由益康顺医学顾问团队审核。' +
+      '<div class="section-title" style="margin-top:12px;margin-bottom:8px;">个性化干预方案</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">' +
+        interventionCards +
       '</div>' +
 
       '<div class="page-footer">' +
         '<span>' + ((d.institution && d.institution.name) || 'Y-CAS评估系统') + '</span>' +
-        '<span>第 4 / 6 页</span>' +
+        '<span>第 4 / 5 页</span>' +
       '</div>';
   },
 
@@ -363,85 +402,17 @@ const ReportRenderer = {
   },
 
   /**
-   * 第5页：干预方案
+   * 第5页：干预方案（内容已合并至第4页，此页保留用于打印分页控制）
    */
   renderIntervention() {
     var d = this.data;
-    var intv = d.interventions || {};
     var el = document.querySelector('[data-page="5"]');
     if (!el) return;
 
-    var dimensions = [
-      { key: 'd1', label: 'D1 深度睡眠', icon: 'fa-moon' },
-      { key: 'd2', label: 'D2 精准营养', icon: 'fa-utensils' },
-      { key: 'd3', label: 'D3 纵向运动', icon: 'fa-running' },
-      { key: 'd4', label: 'D4 情绪习惯', icon: 'fa-heart' }
-    ];
-
-    var tableRows = dimensions.map(function(dim) {
-      var item = intv[dim.key];
-      if (!item) return '';
-      return '<tr>' +
-        '<td><strong>' + dim.label + '</strong></td>' +
-        '<td>' + (item.problem || '') + '</td>' +
-        '<td>' + (item.focus || '') + '</td>' +
-        '<td>' +
-          (item.actions ? '<ul style="margin:0;padding-left:16px;font-size:12px;">' +
-            item.actions.map(function(a) { return '<li>' + a + '</li>'; }).join('') +
-          '</ul>' : '') +
-        '</td>' +
-        '<td>' + (item.duration || '') + '</td>' +
-        '<td><span class="priority-tag ' + (item.priority || '') + '">' + YCASUtils.priorityText(item.priority) + '</span></td>' +
-      '</tr>';
-    }).join('');
-
-    var followUpHtml = '';
-    if (d.followUp) {
-      followUpHtml =
-        '<div class="section-title">随访计划</div>' +
-        '<div class="info-card accent">' +
-          '<div class="info-grid cols-2">' +
-            '<div class="info-item"><span class="info-label">下次随访日期</span><span class="info-value">' + (d.followUp.nextDate || '') + '</span></div>' +
-            '<div class="info-item"><span class="info-label">随访频率</span><span class="info-value">' + (d.followUp.frequency || '') + '</span></div>' +
-          '</div>' +
-          (d.followUp.items ? '<div style="margin-top:12px;"><ul class="action-list">' +
-            d.followUp.items.map(function(item) { return '<li>' + item + '</li>'; }).join('') +
-          '</ul></div>' : '') +
-        '</div>';
-
-      followUpHtml +=
-        '<div style="' + this.trustBadgeStyle.main + '">' +
-          '<div style="' + this.trustBadgeStyle.title + '">🔄 动态追踪承诺</div>' +
-          '<p>益康顺建立\'使用反馈\'追踪体系，通过动态监测孩子的使用情况与生长数据，对管理方案进行适时校准（<strong>5S-System</strong>标准）。</p>' +
-        '</div>';
-    }
-
-    el.innerHTML =
-      '<div class="page-header">' +
-        '<div class="header-icon"><i class="fas fa-clipboard-list"></i></div>' +
-        '<div class="header-title">个性化干预方案</div>' +
-        '<div class="header-sub">Personalized Intervention Plan</div>' +
-      '</div>' +
-
-      '<div style="' + this.trustBadgeStyle.main + '">' +
-        '<div style="' + this.trustBadgeStyle.title + '">👨‍⚕️ 您的专属健康管家团队</div>' +
-        '<p>本方案由<strong>国家注册健康管理师</strong>及<strong>公共营养师</strong>联合制定，所有干预建议均拥有明确营养学原理或文献支持，拒绝盲目添加。</p>' +
-      '</div>' +
-
-      '<div class="section-title">4D维度干预建议</div>' +
-      '<table class="intervention-table">' +
-        '<thead><tr>' +
-          '<th>维度</th><th>现状问题</th><th>改善重点</th><th>具体措施</th><th>周期</th><th>优先级</th>' +
-        '</tr></thead>' +
-        '<tbody>' + tableRows + '</tbody>' +
-      '</table>' +
-
-      followUpHtml +
-
-      '<div class="page-footer">' +
-        '<span>' + ((d.institution && d.institution.name) || 'Y-CAS评估系统') + '</span>' +
-        '<span>第 5 / 6 页</span>' +
-      '</div>';
+    // 第5页内容已整合到第4页，此处仅渲染空白页用于打印分页
+    // 或者可以渲染一个简洁的过渡页
+    el.innerHTML = '';
+    el.style.display = 'none';
   },
 
   /**
@@ -529,7 +500,7 @@ const ReportRenderer = {
 
       '<div class="page-footer">' +
         '<span>' + ((d.institution && d.institution.name) || 'Y-CAS评估系统') + '</span>' +
-        '<span>第 6 / 6 页</span>' +
+        '<span>第 5 / 5 页</span>' +
       '</div>';
   }
 };
