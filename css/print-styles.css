@@ -70,6 +70,11 @@
     print-color-adjust: exact;
   }
 
+  /* 强制4D卡片打印时为2列布局（覆盖响应式断点） */
+  .score-cards {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
   /* 页面大小 */
   @page {
     size: A4;
