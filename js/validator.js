@@ -202,45 +202,69 @@ const DataValidator = {
    */
   validateRow(rowData, rowIndex) {
     var errors = [];
+    var warnings = [];
     var rowLabel = '第' + (rowIndex + 1) + '行: ';
 
+    // 必填字段验证
     if (!rowData.childName) errors.push(rowLabel + '缺少儿童姓名');
     if (!rowData.gender) errors.push(rowLabel + '缺少性别');
     if (!rowData.birthDate) errors.push(rowLabel + '缺少出生日期');
 
+    // 数值范围验证
     var height = parseFloat(rowData.height);
-    if (isNaN(height) || height < 40 || height > 250) {
-      errors.push(rowLabel + '身高数据异常');
+    if (isNaN(height)) {
+      errors.push(rowLabel + '身高数据无效');
+    } else if (height < 40 || height > 250) {
+      errors.push(rowLabel + '身高应在40-250cm之间');
     }
 
     var weight = parseFloat(rowData.weight);
-    if (isNaN(weight) || weight < 1 || weight > 150) {
-      errors.push(rowLabel + '体重数据异常');
+    if (isNaN(weight)) {
+      errors.push(rowLabel + '体重数据无效');
+    } else if (weight < 1 || weight > 150) {
+      errors.push(rowLabel + '体重应在1-150kg之间');
     }
 
     var fh = parseFloat(rowData.fatherHeight);
-    if (isNaN(fh) || fh < 140 || fh > 220) {
-      errors.push(rowLabel + '父亲身高数据异常');
+    if (isNaN(fh)) {
+      errors.push(rowLabel + '父亲身高数据无效');
+    } else if (fh < 140 || fh > 220) {
+      warnings.push(rowLabel + '父亲身高超出常见范围(140-220cm)');
     }
 
     var mh = parseFloat(rowData.motherHeight);
-    if (isNaN(mh) || mh < 130 || mh > 200) {
-      errors.push(rowLabel + '母亲身高数据异常');
+    if (isNaN(mh)) {
+      errors.push(rowLabel + '母亲身高数据无效');
+    } else if (mh < 130 || mh > 200) {
+      warnings.push(rowLabel + '母亲身高超出常见范围(130-200cm)');
     }
 
-    var scoreFields = ['d1Score', 'd2Score', 'd3Score', 'd4Score'];
-    var scoreLabels = ['D1睡眠', 'D2营养', 'D3运动', 'D4情绪'];
-    for (var i = 0; i < scoreFields.length; i++) {
-      var s = parseInt(rowData[scoreFields[i]], 10);
-      if (isNaN(s) || s < 0 || s > 100) {
-        errors.push(rowLabel + scoreLabels[i] + '评分异常(0-100)');
+    // 4D维度原始数据验证（检查是否有至少一个维度的数据）
+    var has4DData = false;
+    var d1Fields = ['d1_sleepDifficulty', 'd1_nightWaking', 'd1_earlyWaking', 'd1_dayEnergy'];
+    var d2Fields = ['d2_pickyEating', 'd2_mealRegularity', 'd2_snackIntake', 'd2_breakfastHabit'];
+    var d3Fields = ['d3_exerciseFrequency', 'd3_verticalSportRatio', 'd3_duration', 'd3_intensity'];
+    var d4Fields = ['d4_anxiety', 'd4_sleepQuality', 'd4_appetiteChange', 'd4_socialWillingness', 'd4_familyAtmosphere', 'd4_parentExpectation', 'd4_academicPressure'];
+    
+    var all4DFields = d1Fields.concat(d2Fields, d3Fields, d4Fields);
+    for (var i = 0; i < all4DFields.length; i++) {
+      if (rowData[all4DFields[i]]) {
+        has4DData = true;
+        break;
       }
     }
+    
+    if (!has4DData) {
+      warnings.push(rowLabel + '缺少4D评估维度数据，将使用默认值');
+    }
+
+    // 合并错误和警告
+    var allIssues = errors.concat(warnings);
 
     return {
       valid: errors.length === 0,
-      errors: errors,
-      status: errors.length === 0 ? 'valid' : (errors.length <= 2 ? 'warning' : 'error')
+      errors: allIssues,
+      status: errors.length === 0 ? (warnings.length === 0 ? 'valid' : 'warning') : 'error'
     };
   }
 };

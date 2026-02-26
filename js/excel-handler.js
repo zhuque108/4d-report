@@ -121,6 +121,8 @@ const ExcelHandler = {
       '身高(cm)': 'height',
       '体重': 'weight',
       '体重(kg)': 'weight',
+      '年增长速率': 'growthRate',
+      '年增长速率(cm/年)': 'growthRate',
       '父亲身高': 'fatherHeight',
       '母亲身高': 'motherHeight',
       '评估日期': 'reportDate',
@@ -129,12 +131,17 @@ const ExcelHandler = {
       'D1-夜间觉醒': 'd1_nightWaking',
       'D1-早醒情况': 'd1_earlyWaking',
       'D1-日间精神': 'd1_dayEnergy',
+      'D1-入睡时间': 'd1_sleepTime',
+      'D1-起床时间': 'd1_wakeTime',
+      'D1-睡眠时长': 'd1_sleepDuration',
+      'D1-睡眠时长(小时)': 'd1_sleepDuration',
       // D2 精准营养
       'D2-挑食偏食': 'd2_pickyEating',
       'D2-进餐时间': 'd2_mealRegularity',
       'D2-零食饮料': 'd2_snackIntake',
       'D2-早餐习惯': 'd2_breakfastHabit',
       'D2-牛奶摄入(ml)': 'd2_milkIntake',
+      'D2-补钙补充': 'd2_calciumSupplement',
       // D3 纵向运动
       'D3-运动频率': 'd3_exerciseFrequency',
       'D3-纵向运动占比': 'd3_verticalSportRatio',
@@ -223,7 +230,7 @@ const ExcelHandler = {
         heightLabel: '',
         bmi: 0,
         bmiStatus: '',
-        growthRate: 0
+        growthRate: YCASUtils.safeParseFloat(item.growthRate) || 0
       },
       genetics: {
         fatherHeight: YCASUtils.safeParseFloat(item.fatherHeight),
@@ -349,9 +356,9 @@ const ExcelHandler = {
 
     // 处理D1
     var d1 = {
-      sleepTime: '21:30',
-      wakeTime: '07:00',
-      sleepDuration: 9.5,
+      sleepTime: item.d1_sleepTime || '21:30',
+      wakeTime: item.d1_wakeTime || '07:00',
+      sleepDuration: YCASUtils.safeParseFloat(item.d1_sleepDuration) || 9.5,
       sleepDifficulty: mapping.d1_sleepDifficulty[item.d1_sleepDifficulty] || 'none',
       nightWaking: mapping.d1_nightWaking[item.d1_nightWaking] || '0',
       earlyWaking: mapping.d1_earlyWaking[item.d1_earlyWaking] || 'none',
@@ -366,7 +373,7 @@ const ExcelHandler = {
       snackIntake: mapping.d2_snackIntake[item.d2_snackIntake] || 'often',
       breakfastHabit: mapping.d2_breakfastHabit[item.d2_breakfastHabit] || 'occasional',
       milkIntake: YCASUtils.safeParseInt(item.d2_milkIntake) || 500,
-      calciumSupplement: false,
+      calciumSupplement: item.d2_calciumSupplement === '是' || item.d2_calciumSupplement === 'true' || item.d2_calciumSupplement === true,
       summary: ''
     };
 
@@ -591,10 +598,16 @@ const ExcelHandler = {
     var container = document.getElementById('import-preview');
     if (!container) return;
 
+    var self = this;
     var rows = this.importedData.map(function(item) {
       var statusIcon = item._valid ? '<span style="color:#10b981">&#10003; 正常</span>' :
         (item._status === 'warning' ? '<span style="color:#f59e0b">&#9888; 警告</span>' :
         '<span style="color:#ef4444">&#10007; 错误</span>');
+
+      // 根据状态决定按钮是否可用
+      var exportBtn = item._valid ?
+        '<button class="btn btn-sm btn-primary" onclick="ExcelHandler.exportSingle(' + item._index + ')" style="padding:4px 12px;font-size:12px;"><i class="fas fa-print"></i> 打印</button>' :
+        '<button class="btn btn-sm" disabled style="padding:4px 12px;font-size:12px;opacity:0.5;cursor:not-allowed;">数据有误</button>';
 
       return '<tr>' +
         '<td><input type="checkbox" class="row-check" data-index="' + item._index + '" ' + (item._valid ? 'checked' : '') + '></td>' +
@@ -604,6 +617,7 @@ const ExcelHandler = {
         '<td>' + (item.height || '-') + '</td>' +
         '<td>' + (item.weight || '-') + '</td>' +
         '<td>' + statusIcon + '</td>' +
+        '<td>' + exportBtn + '</td>' +
       '</tr>';
     }).join('');
 
@@ -612,7 +626,7 @@ const ExcelHandler = {
         '<span style="font-size:14px;font-weight:600;">数据预览</span>' +
         '<div>' +
           '<button class="btn btn-default" onclick="ExcelHandler.selectAll()" style="margin-right:8px;">全选</button>' +
-          '<button class="btn btn-primary" onclick="ExcelHandler.exportSelected()" style="margin-right:8px;"><i class="fas fa-file-pdf"></i> 导出选中PDF</button>' +
+          '<button class="btn btn-primary" onclick="ExcelHandler.exportSelected()" style="margin-right:8px;"><i class="fas fa-print"></i> 打印选中</button>' +
           '<button class="btn btn-success" onclick="ExcelHandler.batchExportZip()"><i class="fas fa-file-archive"></i> 打包下载ZIP</button>' +
         '</div>' +
       '</div>' +
@@ -625,6 +639,7 @@ const ExcelHandler = {
           '<th style="padding:8px;text-align:left;">身高</th>' +
           '<th style="padding:8px;text-align:left;">体重</th>' +
           '<th style="padding:8px;text-align:left;">状态</th>' +
+          '<th style="padding:8px;text-align:left;">操作</th>' +
         '</tr></thead>' +
         '<tbody>' + rows + '</tbody>' +
       '</table>' +
@@ -655,6 +670,45 @@ const ExcelHandler = {
     return indices;
   },
 
+  /**
+   * 单条打印导出
+   */
+  async exportSingle(index) {
+    var item = this.importedData.find(function(d) { return d._index === index; });
+    if (!item || !item._config) {
+      alert('数据不存在或配置无效');
+      return;
+    }
+
+    // 显示加载提示
+    var btn = document.querySelector('button[onclick="ExcelHandler.exportSingle(' + index + ')"]');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 准备打印...';
+    }
+
+    try {
+      // 使用深拷贝避免污染全局配置
+      var configCopy = YCASUtils.deepClone(item._config);
+      ReportRenderer.init(configCopy);
+
+      // 动态等待图表渲染完成
+      await this.waitForChartRender();
+
+      // 调用浏览器打印
+      PDFExporter.export(item._config.child.name, item._config.report.id);
+    } catch (err) {
+      console.error('打印失败:', err);
+      alert('打印失败: ' + err.message);
+    } finally {
+      // 恢复按钮状态
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-print"></i> 打印';
+      }
+    }
+  },
+
   async exportSelected() {
     var indices = this.getSelectedIndices();
     if (indices.length === 0) {
@@ -665,13 +719,40 @@ const ExcelHandler = {
     var item = this.importedData.find(function(d) { return d._index === indices[0]; });
     if (!item || !item._config) return;
 
-    Object.assign(USER_CONFIG, item._config);
-    ReportRenderer.init(USER_CONFIG);
+    // 使用深拷贝避免污染全局配置
+    var configCopy = YCASUtils.deepClone(item._config);
+    ReportRenderer.init(configCopy);
 
-    // 等待图表渲染
-    await new Promise(function(r) { setTimeout(r, 500); });
+    // 动态等待图表渲染完成
+    await this.waitForChartRender();
 
     PDFExporter.export(item._config.child.name, item._config.report.id);
+  },
+
+  /**
+   * 动态等待图表渲染完成
+   * 图表动画时间为800ms，需要确保动画完成后再导出
+   */
+  async waitForChartRender() {
+    // 等待图表动画完成（动画时间800ms + 缓冲）
+    await new Promise(function(r) { setTimeout(r, 1000); });
+
+    // 额外检查图表实例是否存在
+    var maxWait = 2000;
+    var elapsed = 0;
+
+    while (elapsed < maxWait) {
+      var canvas = document.getElementById('radarChart');
+      var hasChart = typeof ChartConfig !== 'undefined' && ChartConfig.radarChart !== null;
+
+      if (canvas && canvas.width > 0 && canvas.height > 0 && hasChart) {
+        return;
+      }
+      await new Promise(function(r) { setTimeout(r, 100); });
+      elapsed += 100;
+    }
+
+    console.warn('图表渲染检查超时，继续导出');
   },
 
   async batchExportZip() {
@@ -692,6 +773,9 @@ const ExcelHandler = {
     var zip = new JSZip();
     var folder = zip.folder('Y-CAS报告');
     var self = this;
+    var successCount = 0;
+    var failCount = 0;
+    var failedItems = [];
 
     for (var i = 0; i < indices.length; i++) {
       var item = this.importedData.find(function(d) { return d._index === indices[i]; });
@@ -699,28 +783,46 @@ const ExcelHandler = {
 
       this.updateProgress((i / indices.length) * 100);
 
-      // 渲染报告
-      Object.assign(USER_CONFIG, item._config);
-      ReportRenderer.init(USER_CONFIG);
+      try {
+        // 使用深拷贝避免污染全局配置
+        var configCopy = YCASUtils.deepClone(item._config);
+        ReportRenderer.init(configCopy);
 
-      // 等待图表渲染
-      await new Promise(function(r) { setTimeout(r, 600); });
+        // 动态等待图表渲染
+        await this.waitForChartRender();
 
-      // 生成PDF Blob
-      var pdfBlob = await PDFExporter.generateBlob();
-      if (pdfBlob) {
-        folder.file(item._config.child.name + '-评估报告.pdf', pdfBlob);
+        // 生成PDF Blob
+        var pdfBlob = await PDFExporter.generateBlob();
+        if (pdfBlob) {
+          folder.file(item._config.child.name + '-评估报告.pdf', pdfBlob);
+          successCount++;
+        } else {
+          throw new Error('PDF生成失败');
+        }
+      } catch (err) {
+        failCount++;
+        failedItems.push(item._config.child.name || '记录' + item._index);
+        console.error('生成报告失败 [' + item._config.child.name + ']:', err);
       }
     }
 
     this.updateProgress(100);
 
     try {
-      var zipBlob = await zip.generateAsync({ type: 'blob' });
-      YCASUtils.downloadFile(zipBlob, 'Y-CAS批量报告-' + YCASUtils.formatDate(new Date()) + '.zip');
+      if (successCount > 0) {
+        var zipBlob = await zip.generateAsync({ type: 'blob' });
+        YCASUtils.downloadFile(zipBlob, 'Y-CAS批量报告-' + YCASUtils.formatDate(new Date()) + '.zip');
+
+        // 显示导出结果
+        if (failCount > 0) {
+          alert('批量导出完成！\n成功: ' + successCount + ' 份\n失败: ' + failCount + ' 份\n\n失败项：' + failedItems.join(', '));
+        }
+      } else {
+        alert('所有报告生成失败，请检查数据后重试');
+      }
     } catch (err) {
       console.error('ZIP打包失败:', err);
-      alert('ZIP打包失败');
+      alert('ZIP打包失败: ' + err.message);
     }
 
     // 3秒后隐藏进度条
@@ -755,26 +857,26 @@ function downloadTemplate() {
   }
 
   var template = [
-    ['评估编号', '儿童姓名', '性别', '出生日期', '身高(cm)', '体重(kg)',
+    ['评估编号', '儿童姓名', '性别', '出生日期', '身高(cm)', '体重(kg)', '年增长速率(cm/年)',
      '父亲身高', '母亲身高', '评估日期',
      // D1 深度睡眠
-     'D1-入睡困难', 'D1-夜间觉醒', 'D1-早醒情况', 'D1-日间精神',
+     'D1-入睡困难', 'D1-夜间觉醒', 'D1-早醒情况', 'D1-日间精神', 'D1-入睡时间', 'D1-起床时间', 'D1-睡眠时长(小时)',
      // D2 精准营养
-     'D2-挑食偏食', 'D2-进餐时间', 'D2-零食饮料', 'D2-早餐习惯', 'D2-牛奶摄入(ml)',
+     'D2-挑食偏食', 'D2-进餐时间', 'D2-零食饮料', 'D2-早餐习惯', 'D2-牛奶摄入(ml)', 'D2-补钙补充',
      // D3 纵向运动
      'D3-运动频率', 'D3-纵向运动占比', 'D3-单次运动时长', 'D3-运动强度', 'D3-主要运动项目',
      // D4 情绪与习惯
      'D4-焦虑情绪', 'D4-睡眠质量', 'D4-食欲变化', 'D4-社交意愿', 'D4-家庭氛围', 'D4-父母期望', 'D4-学业压力'],
-    ['YCAS-2025-001', '张小萌', '女', '2016-03-15', 128.5, 26.8,
+    ['YCAS-2025-001', '张小萌', '女', '2016-03-15', 128.5, 26.8, 5.5,
      175, 162, '2025-02-11',
-     '无', '0次', '无', '充沛',
-     '中度', '不规律', '经常', '偶尔不吃', 500,
+     '无', '0次', '无', '充沛', '21:30', '07:00', 9.5,
+     '中度', '不规律', '经常', '偶尔不吃', 500, '否',
      '3-4次/周', '40-60%', '30-45分钟', '中等', '跳绳, 跑步',
      '偶尔', '好', '无变化', '高', '和谐', '合理', '低'],
-    ['YCAS-2025-002', '王小明', '男', '2015-08-20', 135.0, 30.2,
+    ['YCAS-2025-002', '王小明', '男', '2015-08-20', 135.0, 30.2, 6.0,
      178, 165, '2025-02-11',
-     '偶尔', '1-2次', '偶尔', '一般',
-     '轻度', '规律', '偶尔', '每天吃', 600,
+     '偶尔', '1-2次', '偶尔', '一般', '22:00', '07:00', 9,
+     '轻度', '规律', '偶尔', '每天吃', 600, '是',
      '>=5次/周', '>=60%', '>=45分钟', '剧烈', '篮球, 摸高',
      '无', '好', '无变化', '高', '和谐', '合理', '中']
   ];
@@ -785,11 +887,12 @@ function downloadTemplate() {
 
   ws['!cols'] = [
     { wch: 16 }, { wch: 10 }, { wch: 6 }, { wch: 12 },
-    { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 12 },
+    { wch: 10 }, { wch: 10 }, { wch: 14 },
+    { wch: 10 }, { wch: 10 }, { wch: 12 },
     // D1
-    { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 },
+    { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 12 },
     // D2
-    { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 12 },
+    { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 10 },
     // D3
     { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 10 }, { wch: 15 },
     // D4
